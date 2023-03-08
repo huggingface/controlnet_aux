@@ -9,9 +9,12 @@ pip install controlnet-aux==0.0.1
 
 
 ```python
-from controlnet_aux import OpenposeDetector, MLSDdetector, HEDdetector
+from controlnet_aux import OpenposeDetector, MLSDdetector, HEDdetector, CannyDetector, MidasDetector
 
 open_pose = OpenposeDetector.from_pretrained("lllyasviel/ControlNet")
 mlsd = MLSDdetector.from_pretrained("lllyasviel/ControlNet")
 hed = HEDdetector.from_pretrained("lllyasviel/ControlNet")
+midas = MidasDetector.from_pretrained("lllyasviel/ControlNet")
+canny = CannyDetector()
+
 ```
