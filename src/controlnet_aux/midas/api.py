@@ -74,10 +74,10 @@ def load_midas_transform(model_type):
     return transform
 
 
-def load_model(model_type):
+def load_model(model_type, model_path=None):
     # https://github.com/isl-org/MiDaS/blob/master/run.py
     # load network
-    model_path = ISL_PATHS[model_type]
+    model_path = model_path or ISL_PATHS[model_type]
     if model_type == "dpt_large":  # DPT-Large
         model = DPTDepthModel(
             path=model_path,
@@ -155,10 +155,10 @@ class MiDaSInference(nn.Module):
         "midas_v21_small",
     ]
 
-    def __init__(self, model_type):
+    def __init__(self, model_type, model_path):
         super().__init__()
         assert (model_type in self.MODEL_TYPES_ISL)
-        model, _ = load_model(model_type)
+        model, _ = load_model(model_type, model_path)
         self.model = model
         self.model.train = disabled_train
 

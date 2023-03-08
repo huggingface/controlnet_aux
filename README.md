@@ -14,6 +14,7 @@ from controlnet_aux import OpenposeDetector, MLSDdetector, HEDdetector, CannyDet
 open_pose = OpenposeDetector.from_pretrained("lllyasviel/ControlNet")
 mlsd = MLSDdetector.from_pretrained("lllyasviel/ControlNet")
 hed = HEDdetector.from_pretrained("lllyasviel/ControlNet")
+midas = MidasDetector.from_pretrained("lllyasviel/ControlNet")
 canny = CannyDetector()
-midas = MidasDetector()
+
 ```

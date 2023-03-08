@@ -3,14 +3,22 @@ import numpy as np
 from PIL import Image
 import torch
 
+from huggingface_hub import hf_hub_download
 from einops import rearrange
 from .api import MiDaSInference
 
 
 class MidasDetector:
-    def __init__(self):
-        self.model = MiDaSInference(model_type="dpt_hybrid").cuda()
+    def __init__(self, model_type="dpt_hybrid", model_path=None):
+        self.model = MiDaSInference(model_type=model_type, model_path=model_path).cuda()
 
+        
+    @classmethod
+    def from_pretrained(cls, pretrained_model_or_path, model_type="dpt_hybrid", filename=None):
+        filename = filename or "annotator/ckpts/dpt_hybrid-midas-501f0c75.pt"
+        model_path = hf_hub_download(pretrained_model_or_path, filename)
+        return cls(model_type=model_type, model_path=model_path)
+        
     def __call__(self, input_image, a=np.pi * 2.0, bg_th=0.1):
         
         input_type = "np"
