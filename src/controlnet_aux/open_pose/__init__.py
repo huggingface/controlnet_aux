@@ -31,9 +31,9 @@ class OpenposeDetector:
         self.body_estimation = body_estimation
 
     @classmethod
-    def from_pretrained(cls, pretrained_model_or_path, filename=None):
+    def from_pretrained(cls, pretrained_model_or_path, filename=None, cache_dir=None):
         filename = filename or "annotator/ckpts/body_pose_model.pth"
-        body_model_path = hf_hub_download(pretrained_model_or_path, filename)
+        body_model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
 
         body_estimation = Body(body_model_path)
 
