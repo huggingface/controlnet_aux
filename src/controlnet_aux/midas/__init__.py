@@ -6,7 +6,7 @@ import torch
 from huggingface_hub import hf_hub_download
 from einops import rearrange
 from .api import MiDaSInference
-
+from ..util import HWC3
 
 class MidasDetector:
     def __init__(self, model_type="dpt_hybrid", model_path=None):
@@ -25,7 +25,8 @@ class MidasDetector:
         if isinstance(input_image, Image.Image):
             input_image = np.array(input_image)
             input_type = "pil"
-        assert input_image.ndim == 3
+            
+        input_image = HWC3(input_image)
         image_depth = input_image
         with torch.no_grad():
             image_depth = torch.from_numpy(image_depth).float().cuda()
