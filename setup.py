@@ -73,7 +73,6 @@ from distutils.core import Command
 
 from setuptools import find_packages, setup
 
-
 # IMPORTANT:
 # 1. all dependencies should be listed here with their version requirements if any
 # 2. once modified, run: `make deps_table_update` to update src/diffusers/dependency_versions_table.py
@@ -87,7 +86,8 @@ _deps = [
     "matplotlib",
     "scipy",
     "huggingface_hub",
-    "einops"
+    "einops",
+    "timm",
 ]
 
 # this is a lookup table with items like:
@@ -96,7 +96,9 @@ _deps = [
 # packaging: "packaging"
 #
 # some of the values are versioned whereas others aren't.
-deps = {b: a for a, b in (re.findall(r"^(([^!=<>~]+)(?:[!=<>~].*)?$)", x)[0] for x in _deps)}
+deps = {
+    b: a for a, b in (re.findall(r"^(([^!=<>~]+)(?:[!=<>~].*)?$)", x)[0] for x in _deps)
+}
 
 # since we save this data in src/diffusers/dependency_versions_table.py it can be easily accessed from
 # anywhere. If you need to quickly access the data from this table in a shell, you can do so easily with:
@@ -128,7 +130,11 @@ class DepsTableUpdateCommand(Command):
     description = "build runtime dependency table"
     user_options = [
         # format: (long option, short option, description).
-        ("dep-table-update", None, "updates src/diffusers/dependency_versions_table.py"),
+        (
+            "dep-table-update",
+            None,
+            "updates src/diffusers/dependency_versions_table.py",
+        ),
     ]
 
     def initialize_options(self):
