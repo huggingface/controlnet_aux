@@ -1,7 +1,7 @@
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
-from .open_pose import OpenposeDetector
-from .mlsd import MLSDdetector
-from .hed import HEDdetector
 from .canny import CannyDetector
+from .hed import HEDdetector
 from .midas import MidasDetector
+from .mlsd import MLSDdetector
+from .open_pose import OpenposeDetector
