@@ -9,12 +9,11 @@ class CannyDetector:
         input_type = "np"
         if isinstance(img, Image.Image):
             img = np.array(img)
-            input_type = "pil"
         
         img = HWC3(img)
         img = cv2.Canny(img, low_threshold, high_threshold)
         
-        if input_type == "pil":
-            img = Image.fromarray(img)
+        img = Image.fromarray(img)
+        img = img.convert("RGB")
             
         return img

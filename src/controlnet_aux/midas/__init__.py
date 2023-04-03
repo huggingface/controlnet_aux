@@ -21,10 +21,8 @@ class MidasDetector:
         
     def __call__(self, input_image, a=np.pi * 2.0, bg_th=0.1):
         
-        input_type = "np"
         if isinstance(input_image, Image.Image):
             input_image = np.array(input_image)
-            input_type = "pil"
             
         input_image = HWC3(input_image)
         image_depth = input_image
@@ -50,8 +48,9 @@ class MidasDetector:
             normal /= np.sum(normal ** 2.0, axis=2, keepdims=True) ** 0.5
             normal_image = (normal * 127.5 + 127.5).clip(0, 255).astype(np.uint8)
         
-        if input_type == "pil":
-            depth_image = Image.fromarray(depth_image)
-            normal_image = Image.fromarray(normal_image)
+
+        depth_image = Image.fromarray(depth_image)
+        depth_image = depth_image.convert("RGB")
+        normal_image = Image.fromarray(normal_image)
         
         return depth_image, normal_image
