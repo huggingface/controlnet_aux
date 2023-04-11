@@ -88,6 +88,7 @@ _deps = [
     "huggingface_hub",
     "einops",
     "timm",
+    "torchvision"
 ]
 
 # this is a lookup table with items like:
@@ -175,6 +176,8 @@ install_requires = [
     deps["numpy"],
     deps["Pillow"],
     deps["einops"],
+    deps["torchvision"],
+    deps["timm"],
 ]
 
 setup(
