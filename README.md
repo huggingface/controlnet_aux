@@ -4,7 +4,7 @@ This is a Pypi installable copied version of HED, MLSD and Human Pose auxiliary 
 
 All credit goes to https://github.com/lllyasviel .
 ```
-pip install controlnet-aux==0.0.1
+pip install controlnet-aux==0.0.2
 ```
 
 
@@ -16,5 +16,4 @@ mlsd = MLSDdetector.from_pretrained("lllyasviel/ControlNet")
 hed = HEDdetector.from_pretrained("lllyasviel/ControlNet")
 midas = MidasDetector.from_pretrained("lllyasviel/ControlNet")
 canny = CannyDetector()
-
 ```
