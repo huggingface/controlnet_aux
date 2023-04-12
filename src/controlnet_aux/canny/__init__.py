@@ -16,5 +16,6 @@ class CannyDetector:
         
         if input_type == "pil":
             img = Image.fromarray(img)
+            img = img.convert("RGB")
             
         return img

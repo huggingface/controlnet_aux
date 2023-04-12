@@ -52,6 +52,7 @@ class MidasDetector:
         
         if input_type == "pil":
             depth_image = Image.fromarray(depth_image)
+            depth_image = depth_image.convert("RGB")
             normal_image = Image.fromarray(normal_image)
         
         return depth_image, normal_image
