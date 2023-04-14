@@ -88,7 +88,7 @@ _deps = [
     "huggingface_hub",
     "einops",
     "timm",
-    "torchvision"
+    "torchvision",
     "scikit-image"
 ]
 
