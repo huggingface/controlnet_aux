@@ -143,6 +143,7 @@ class LineartDetector:
         H, W, C = img.shape
 
         detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)
+        detected_map = 255 - detected_map
         
         if return_pil:
             detected_map = Image.fromarray(detected_map)
