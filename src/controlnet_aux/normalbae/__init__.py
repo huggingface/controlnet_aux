@@ -6,7 +6,7 @@ from PIL import Image
 
 from ..open_pose.util import HWC3, resize_image
 from einops import rearrange
-from .models.NNET import NNET
+from .nets.NNET import NNET
 from huggingface_hub import hf_hub_download
 from .utils import utils
 import torchvision.transforms as transforms

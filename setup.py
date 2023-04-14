@@ -164,9 +164,6 @@ class DepsTableUpdateCommand(Command):
 
 extras = {}
 
-
-extras = {}
-
 install_requires = [
     deps["torch"],
     deps["importlib_metadata"],
