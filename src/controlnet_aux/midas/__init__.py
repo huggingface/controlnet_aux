@@ -10,7 +10,9 @@ from ..util import HWC3
 
 class MidasDetector:
     def __init__(self, model_type="dpt_hybrid", model_path=None):
-        self.model = MiDaSInference(model_type=model_type, model_path=model_path).cuda()
+        self.model = MiDaSInference(model_type=model_type, model_path=model_path)
+        if torch.cuda.is_available():
+            self.model = self.model.cuda()
 
         
     @classmethod
@@ -33,7 +35,9 @@ class MidasDetector:
         input_image = HWC3(input_image)
         image_depth = input_image
         with torch.no_grad():
-            image_depth = torch.from_numpy(image_depth).float().cuda()
+            image_depth = torch.from_numpy(image_depth).float()
+            if torch.cuda.is_available():
+                image_depth = image_depth.cuda()
             image_depth = image_depth / 127.5 - 1.0
             image_depth = rearrange(image_depth, 'h w c -> 1 c h w')
             depth = self.model(image_depth)[0]
