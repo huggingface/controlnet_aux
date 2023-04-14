@@ -128,6 +128,7 @@ class HEDdetector:
 
         detected_map = edge[0]
 
+        import ipdb; ipdb.set_trace()
         detected_map = HWC3(detected_map)
 
         img = resize_image(input_image, image_resolution)

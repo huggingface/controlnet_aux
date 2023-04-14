@@ -5,3 +5,5 @@ from .hed import HEDdetector
 from .midas import MidasDetector
 from .mlsd import MLSDdetector
 from .open_pose import OpenposeDetector
+from .pidi import PidiNetDetector
+from .normalbae import NormalBaeDetector
