@@ -1,12 +1,18 @@
 # ControlNet auxiliary models
 
-This is a Pypi installable copied version of HED, MLSD and Human Pose auxiliary models: https://github.com/lllyasviel/ControlNet/tree/main/annotator
+This is a PyPi installable package of [lllyasviel's ControlNet Annotators](https://github.com/lllyasviel/ControlNet/tree/main/annotator)
 
-All credit goes to https://github.com/lllyasviel .
+The code is copy-pasted from the respective folders in https://github.com/lllyasviel/ControlNet/tree/main/annotator and connected to [the 🤗 Hub](https://huggingface.co/lllyasviel/Annotators).
+
+All credit & copyright goes to https://github.com/lllyasviel .
+
+## Install
+
 ```
 pip install controlnet-aux==0.0.2
 ```
 
+## Usage
 
 ```python
 from controlnet_aux import OpenposeDetector, MLSDdetector, HEDdetector, CannyDetector, MidasDetector
