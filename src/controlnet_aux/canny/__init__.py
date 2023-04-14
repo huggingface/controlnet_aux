@@ -4,7 +4,7 @@ from PIL import Image
 from ..util import HWC3
 
 class CannyDetector:
-    def __call__(self, img, low_threshold, high_threshold):
+    def __call__(self, img, low_threshold=100, high_threshold=200):
         
         input_type = "np"
         if isinstance(img, Image.Image):

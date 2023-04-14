@@ -15,7 +15,11 @@ class MidasDetector:
         
     @classmethod
     def from_pretrained(cls, pretrained_model_or_path, model_type="dpt_hybrid", filename=None, cache_dir=None):
-        filename = filename or "annotator/ckpts/dpt_hybrid-midas-501f0c75.pt"
+        if pretrained_model_or_path == "lllyasviel/ControlNet":
+            filename = filename or "annotator/ckpts/dpt_hybrid-midas-501f0c75.pt"
+        else:
+            filename = filename or "dpt_hybrid-midas-501f0c75.pt"
+
         model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
         return cls(model_type=model_type, model_path=model_path)
         
@@ -55,4 +59,4 @@ class MidasDetector:
             depth_image = depth_image.convert("RGB")
             normal_image = Image.fromarray(normal_image)
         
-        return depth_image, normal_image
+        return depth_image

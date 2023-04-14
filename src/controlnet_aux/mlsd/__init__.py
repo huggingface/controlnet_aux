@@ -17,7 +17,11 @@ class MLSDdetector:
 
     @classmethod
     def from_pretrained(cls, pretrained_model_or_path, filename=None, cache_dir=None):
-        filename = filename or "annotator/ckpts/mlsd_large_512_fp32.pth"
+        if pretrained_model_or_path == "lllyasviel/ControlNet":
+            filename = filename or "annotator/ckpts/mlsd_large_512_fp32.pth"
+        else:
+            filename = filename or "mlsd_large_512_fp32.pth"
+
         model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
 
         model = MobileV2_MLSD_Large()

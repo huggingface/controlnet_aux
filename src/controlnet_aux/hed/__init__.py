@@ -100,7 +100,11 @@ class HEDdetector:
 
     @classmethod
     def from_pretrained(cls, pretrained_model_or_path, filename=None, cache_dir=None):
-        filename = filename or "annotator/ckpts/network-bsds500.pth"
+        if pretrained_model_or_path == "lllyasviel/ControlNet":
+            filename = filename or "annotator/ckpts/network-bsds500.pth"
+        else:
+            filename = filename or "network-bsds500.pth"
+
         model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
 
         netNetwork = Network(model_path)
@@ -128,7 +132,6 @@ class HEDdetector:
 
         detected_map = edge[0]
 
-        import ipdb; ipdb.set_trace()
         detected_map = HWC3(detected_map)
 
         img = resize_image(input_image, image_resolution)
