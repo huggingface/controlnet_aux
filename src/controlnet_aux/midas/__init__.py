@@ -25,7 +25,7 @@ class MidasDetector:
         model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
         return cls(model_type=model_type, model_path=model_path)
         
-    def __call__(self, input_image, a=np.pi * 2.0, bg_th=0.1):
+    def __call__(self, input_image, a=np.pi * 2.0, bg_th=0.1, depth_and_normal=False):
         
         input_type = "np"
         if isinstance(input_image, Image.Image):
@@ -49,18 +49,23 @@ class MidasDetector:
             depth_image = (depth_pt * 255.0).clip(0, 255).astype(np.uint8)
 
             depth_np = depth.cpu().numpy()
-            x = cv2.Sobel(depth_np, cv2.CV_32F, 1, 0, ksize=3)
-            y = cv2.Sobel(depth_np, cv2.CV_32F, 0, 1, ksize=3)
-            z = np.ones_like(x) * a
-            x[depth_pt < bg_th] = 0
-            y[depth_pt < bg_th] = 0
-            normal = np.stack([x, y, z], axis=2)
-            normal /= np.sum(normal ** 2.0, axis=2, keepdims=True) ** 0.5
-            normal_image = (normal * 127.5 + 127.5).clip(0, 255).astype(np.uint8)
+            if depth_and_normal:
+                x = cv2.Sobel(depth_np, cv2.CV_32F, 1, 0, ksize=3)
+                y = cv2.Sobel(depth_np, cv2.CV_32F, 0, 1, ksize=3)
+                z = np.ones_like(x) * a
+                x[depth_pt < bg_th] = 0
+                y[depth_pt < bg_th] = 0
+                normal = np.stack([x, y, z], axis=2)
+                normal /= np.sum(normal ** 2.0, axis=2, keepdims=True) ** 0.5
+                normal_image = (normal * 127.5 + 127.5).clip(0, 255).astype(np.uint8)
         
         if input_type == "pil":
             depth_image = Image.fromarray(depth_image)
             depth_image = depth_image.convert("RGB")
-            normal_image = Image.fromarray(normal_image)
+            if depth_and_normal:
+                normal_image = Image.fromarray(normal_image)
         
-        return depth_image
+        if depth_and_normal:
+            return depth_image, normal_image
+        else:
+            return depth_image
