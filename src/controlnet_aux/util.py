@@ -38,6 +38,12 @@ def resize_image(input_image, resolution):
     return img
 
 
+def safe_step(x, step=2):
+    y = x.astype(np.float32) * float(step + 1)
+    y = y.astype(np.int32).astype(np.float32) / float(step)
+    return y
+
+
 def ade_palette():
     """ADE20K palette that maps each class to RGB values."""
     return [[120, 120, 120], [180, 120, 120], [6, 230, 230], [80, 50, 50],
