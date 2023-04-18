@@ -6,13 +6,8 @@ import cv2
 from huggingface_hub import hf_hub_download
 from .model import pidinet
 from ..open_pose.util import HWC3, resize_image
+from ..util import safe_step
 from PIL import Image
-
-
-def safe_step(x, step=2):
-    y = x.astype(np.float32) * float(step + 1)
-    y = y.astype(np.int32).astype(np.float32) / float(step)
-    return y
 
 
 class PidiNetDetector:

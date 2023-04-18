@@ -6,6 +6,7 @@ from einops import rearrange
 from huggingface_hub import hf_hub_download
 from PIL import Image
 from ..open_pose.util import HWC3, resize_image
+from ..util import safe_step
 
 class Network(torch.nn.Module):
     def __init__(self, model_path):
@@ -111,7 +112,7 @@ class HEDdetector:
 
         return cls(netNetwork)
 
-    def __call__(self, input_image, detect_resolution=512, image_resolution=512, return_pil=True, scribble=False):
+    def __call__(self, input_image, detect_resolution=512, image_resolution=512, safe=False, return_pil=True, scribble=False):
         device = next(iter(self.netNetwork.parameters())).device
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
@@ -127,8 +128,10 @@ class HEDdetector:
             image_hed = image_hed / 255.0
             image_hed = rearrange(image_hed, 'h w c -> 1 c h w')
             edge = self.netNetwork(image_hed)[0]
-            edge = (edge.cpu().numpy() * 255.0).clip(0, 255).astype(np.uint8)
-
+            edge = edge.cpu().numpy()
+            if safe:
+                edge = safe_step(edge)
+            edge = (edge * 255.0).clip(0, 255).astype(np.uint8)
 
         detected_map = edge[0]
 
