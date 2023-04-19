@@ -2,9 +2,9 @@ dependencies = ["torch"]
 
 import torch
 
-from midas.dpt_depth import DPTDepthModel
-from midas.midas_net import MidasNet
-from midas.midas_net_custom import MidasNet_small
+from .midas.dpt_depth import DPTDepthModel
+from .midas.midas_net import MidasNet
+from .midas.midas_net_custom import MidasNet_small
 
 def DPT_BEiT_L_512(pretrained=True, **kwargs):
     """ # This docstring shows up in hub.help()
@@ -303,8 +303,8 @@ def MiDaS_small(pretrained=True, **kwargs):
 def transforms():
     import cv2
     from torchvision.transforms import Compose
-    from midas.transforms import Resize, NormalizeImage, PrepareForNet
-    from midas import transforms
+    from .midas.transforms import Resize, NormalizeImage, PrepareForNet
+    from .midas import transforms
 
     transforms.default_transform = Compose(
         [
