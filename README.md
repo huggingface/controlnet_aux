@@ -18,7 +18,7 @@ pip install controlnet-aux==0.0.3
 from PIL import Image
 import requests
 from io import BytesIO
-from controlnet_aux import HEDdetector, MidasDetector, MLSDdetector, OpenposeDetector, PidiNetDetector, NormalBaeDetector, LineartDetector, LineartAnimeDetector, CannyDetector, ContentShuffleDetector
+from controlnet_aux import HEDdetector, MidasDetector, MLSDdetector, OpenposeDetector, PidiNetDetector, NormalBaeDetector, LineartDetector, LineartAnimeDetector, CannyDetector, ContentShuffleDetector, ZoeDetector
 
 # load image
 url = "https://huggingface.co/lllyasviel/sd-controlnet-openpose/resolve/main/images/pose.png"
@@ -35,6 +35,7 @@ pidi = PidiNetDetector.from_pretrained("lllyasviel/Annotators")
 normal_bae = NormalBaeDetector.from_pretrained("lllyasviel/Annotators")
 lineart = LineartDetector.from_pretrained("lllyasviel/Annotators")
 lineart_anime = LineartAnimeDetector.from_pretrained("lllyasviel/Annotators")
+zoe = ZoeDetector.from_pretrained("lllyasviel/Annotators")
 
 # instantiate
 canny = CannyDetector()
@@ -50,6 +51,7 @@ processed_image_pidi = pidi(img, safe=True)
 processed_image_normal_bae = normal_bae(img)
 processed_image_lineart = lineart(img, coarse=True)
 processed_image_lineart_anime = lineart_anime(img)
+processed_image_zoe = zoe(img)
 
 processed_image_canny = canny(img)
 processed_image_content = content(img)
