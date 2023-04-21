@@ -12,3 +12,4 @@ from .zoe import ZoeDetector
 
 from .canny import CannyDetector
 from .shuffle import ContentShuffleDetector
+from .mediapipe_face import MediapipeFaceDetector
