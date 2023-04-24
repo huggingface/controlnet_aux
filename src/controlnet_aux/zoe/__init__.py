@@ -21,7 +21,11 @@ class ZoeDetector:
     def from_pretrained(cls, pretrained_model_or_path, filename=None, cache_dir=None):
         filename = filename or "ZoeD_M12_N.pt"
 
-        model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
+        if os.path.isdir(pretrained_model_or_path):
+            model_path = os.path.join(pretrained_model_or_path, filename)
+        else:
+            model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
+            
         conf = get_config("zoedepth", "infer")
         model = ZoeDepth.build_from_config(conf)
         model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'))['model'])

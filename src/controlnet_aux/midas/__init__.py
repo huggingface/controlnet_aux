@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from PIL import Image
 import torch
+import os 
 
 from huggingface_hub import hf_hub_download
 from einops import rearrange
@@ -22,7 +23,11 @@ class MidasDetector:
         else:
             filename = filename or "dpt_hybrid-midas-501f0c75.pt"
 
-        model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
+        if os.path.isdir(pretrained_model_or_path):
+            model_path = os.path.join(pretrained_model_or_path, filename)
+        else:
+            model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
+
         return cls(model_type=model_type, model_path=model_path)
         
     def __call__(self, input_image, a=np.pi * 2.0, bg_th=0.1, depth_and_normal=False):

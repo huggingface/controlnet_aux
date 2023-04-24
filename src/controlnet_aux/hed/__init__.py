@@ -106,7 +106,10 @@ class HEDdetector:
         else:
             filename = filename or "network-bsds500.pth"
 
-        model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
+        if os.path.isdir(pretrained_model_or_path):
+            model_path = os.path.join(pretrained_model_or_path, filename)
+        else:
+            model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
 
         netNetwork = Network(model_path)
 

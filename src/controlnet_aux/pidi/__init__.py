@@ -17,7 +17,11 @@ class PidiNetDetector:
     @classmethod
     def from_pretrained(cls, pretrained_model_or_path, filename=None, cache_dir=None):
         filename = filename or "table5_pidinet.pth"
-        model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
+
+        if os.path.isdir(pretrained_model_or_path):
+            model_path = os.path.join(pretrained_model_or_path, filename)
+        else:
+            model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
 
         netNetwork = pidinet()
         netNetwork.load_state_dict({k.replace('module.', ''): v for k, v in torch.load(model_path)['state_dict'].items()})
