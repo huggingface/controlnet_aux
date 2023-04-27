@@ -22,7 +22,10 @@ class MLSDdetector:
         else:
             filename = filename or "mlsd_large_512_fp32.pth"
 
-        model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
+        if os.path.isdir(pretrained_model_or_path):
+            model_path = os.path.join(pretrained_model_or_path, filename)
+        else:
+            model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
 
         model = MobileV2_MLSD_Large()
         model.load_state_dict(torch.load(model_path), strict=True)
