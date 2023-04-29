@@ -210,6 +210,7 @@ setup(
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
     ],
     cmdclass={"deps_table_update": DepsTableUpdateCommand},
+    data_files=[('zoe',['zoedepth/models/zoedepth/*.json', 'zoedepth/models/zoedepth_nk/*.json'])]
 )
 
 # Release checklist
