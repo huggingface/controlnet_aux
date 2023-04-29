@@ -210,7 +210,7 @@ setup(
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
     ],
     cmdclass={"deps_table_update": DepsTableUpdateCommand},
-    data_files=[('controlnet_aux',['zoe/zoedepth/models/zoedepth/config_zoedepth.json', 'zoe/zoedepth/models/zoedepth/config_zoedepth_kitti.json', 'zoe/zoedepth/models/zoedepth_nk/config_zoedepth_nk.json'])]
+    package_data={'controlnet_aux' : ['zoe/zoedepth/models/zoedepth/*.json', 'zoe/zoedepth/models/zoedepth_nk/*.json']}
 )
 
 # Release checklist
