@@ -89,7 +89,7 @@ _deps = [
     "einops",
     "timm",
     "torchvision",
-    "scikit-image",
+    "scikit-image"
 ]
 
 # this is a lookup table with items like:
