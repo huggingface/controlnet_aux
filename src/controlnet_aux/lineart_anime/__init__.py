@@ -156,7 +156,7 @@ class LineartAnimeDetector:
             image_feed = rearrange(image_feed, 'h w c -> 1 c h w')
 
             line = self.model(image_feed)[0, 0] * 127.5 + 127.5
-            line = line.cpu().numpy()
+            line = line.cpu().numpy().astype(np.uint8)
 
             line = cv2.resize(line, (W, H), interpolation=cv2.INTER_CUBIC)
             line = line.clip(0, 255).astype(np.uint8)
@@ -170,7 +170,7 @@ class LineartAnimeDetector:
 
         detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)
         detected_map = 255 - detected_map
-        
+
         if return_pil:
             detected_map = Image.fromarray(detected_map)
 
