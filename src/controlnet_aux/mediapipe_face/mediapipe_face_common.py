@@ -1,6 +1,10 @@
 from typing import Mapping
 
-import mediapipe as mp
+try:
+    import mediapipe as mp
+except ImportError:
+    raise ImportError("The module 'mediapipe' is not installed. Please install it using the command: pip install 'mediapipe'")
+
 import numpy
 
 
