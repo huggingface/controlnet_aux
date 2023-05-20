@@ -89,8 +89,7 @@ _deps = [
     "einops",
     "timm",
     "torchvision",
-    "scikit-image",
-    "mediapipe"
+    "scikit-image"
 ]
 
 # this is a lookup table with items like:
@@ -178,7 +177,6 @@ install_requires = [
     deps["torchvision"],
     deps["timm"],
     deps["scikit-image"],
-    deps["mediapipe"]
 ]
 
 setup(
