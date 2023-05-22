@@ -36,7 +36,7 @@ normal_bae = NormalBaeDetector.from_pretrained("lllyasviel/Annotators")
 lineart = LineartDetector.from_pretrained("lllyasviel/Annotators")
 lineart_anime = LineartAnimeDetector.from_pretrained("lllyasviel/Annotators")
 zoe = ZoeDetector.from_pretrained("lllyasviel/Annotators")
-sam = SamDetector("./weight_path")
+sam = SamDetector.from_pretrained("./weight_path")
 
 # instantiate
 canny = CannyDetector()
