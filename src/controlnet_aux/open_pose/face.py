@@ -314,17 +314,17 @@ class Face(object):
         heatmap_peak_thresh: return landmark if over threshold, default 0.1
 
     """
-    def __init__(self, face_model_path,
+    def __init__(self, face_model_path, device,
                  inference_size=None,
                  gaussian_sigma=None,
                  heatmap_peak_thresh=None):
+        self.device = device
         self.inference_size = inference_size or params["inference_img_size"]
         self.sigma = gaussian_sigma or params['gaussian_sigma']
         self.threshold = heatmap_peak_thresh or params["heatmap_peak_thresh"]
         self.model = FaceNet()
         self.model.load_state_dict(torch.load(face_model_path))
-        if torch.cuda.is_available():
-            self.model = self.model.cuda()
+        self.model.to(self.device)
         self.model.eval()
 
     def __call__(self, face_img):
@@ -332,9 +332,7 @@ class Face(object):
 
         w_size = 384
         x_data = torch.from_numpy(util.smart_resize(face_img, (w_size, w_size))).permute([2, 0, 1]) / 256.0 - 0.5
-
-        if torch.cuda.is_available():
-            x_data = x_data.cuda()
+        x_data = x_data.to(self.device)
 
         with torch.no_grad():
             hs = self.model(x_data[None, ...])
