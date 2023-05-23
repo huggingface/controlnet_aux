@@ -1,5 +1,6 @@
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+import warnings
 
 import torch
 import cv2
@@ -45,7 +46,7 @@ class OpenposeDetector:
         self.face_estimation = face_estimation
 
     @classmethod
-    def from_pretrained(cls, pretrained_model_or_path, filename=None, hand_filename=None, face_filename=None, cache_dir=None):
+    def from_pretrained(cls, pretrained_model_or_path, device=None, filename=None, hand_filename=None, face_filename=None, cache_dir=None):
 
         if pretrained_model_or_path == "lllyasviel/ControlNet":
             filename = filename or "annotator/ckpts/body_pose_model.pth"
@@ -69,14 +70,27 @@ class OpenposeDetector:
             hand_model_path = hf_hub_download(pretrained_model_or_path, hand_filename, cache_dir=cache_dir)
             face_model_path = hf_hub_download(face_pretrained_model_or_path, face_filename, cache_dir=cache_dir)
 
-        body_estimation = Body(body_model_path)
-        hand_estimation = Hand(hand_model_path)
-        face_estimation = Face(face_model_path)
+        if device is None:
+            if torch.cuda.is_available():
+                device = 'cuda'
+            elif torch.backends.mps.is_available():
+                device = 'mps'
+            else:
+                device = 'cpu'
+
+        body_estimation = Body(body_model_path, device)
+        hand_estimation = Hand(hand_model_path, device)
+        face_estimation = Face(face_model_path, device)
 
         return cls(body_estimation, hand_estimation, face_estimation)
 
-    def __call__(self, input_image, detect_resolution=512, image_resolution=512, hand_and_face=False, return_pil=True):
-        # hand = False
+
+    def __call__(self, input_image, detect_resolution=512, image_resolution=512, include_body=True, include_hand=False, include_face=False, hand_and_face=False, return_pil=True):
+        if hand_and_face:
+            warnings.warn("hand_and_face is deprecated. Use include_hand and include_face instead.", DeprecationWarning)
+            include_hand = True
+            include_face = True
+
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
 
@@ -88,7 +102,7 @@ class OpenposeDetector:
             candidate, subset = self.body_estimation(input_image)
             hands = []
             faces = []
-            if hand_and_face:
+            if include_hand:
                 # Hand
                 hands_list = handDetect(candidate, subset, input_image)
                 for x, y, w, is_left in hands_list:
@@ -97,6 +111,7 @@ class OpenposeDetector:
                         peaks[:, 0] = np.where(peaks[:, 0] < 1e-6, -1, peaks[:, 0] + x) / float(W)
                         peaks[:, 1] = np.where(peaks[:, 1] < 1e-6, -1, peaks[:, 1] + y) / float(H)
                         hands.append(peaks.tolist())
+            if include_face:
                 # Face
                 faces_list = faceDetect(candidate, subset, input_image)
                 for x, y, w in faces_list:
@@ -115,7 +130,7 @@ class OpenposeDetector:
             bodies = dict(candidate=candidate.tolist(), subset=subset.tolist())
             pose = dict(bodies=bodies, hands=hands, faces=faces)
 
-            canvas = draw_pose(pose, H, W)
+            canvas = draw_pose(pose, H, W, draw_body=include_body, draw_hand=include_hand, draw_face=include_face)
 
         detected_map = HWC3(canvas)
         img = resize_image(input_image, image_resolution)

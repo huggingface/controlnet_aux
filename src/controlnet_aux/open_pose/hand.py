@@ -11,12 +11,12 @@ from .model import handpose_model
 from . import util
 
 class Hand(object):
-    def __init__(self, model_path):
+    def __init__(self, model_path, device):
+        self.device = device
         self.model = handpose_model()
-        if torch.cuda.is_available():
-            self.model = self.model.cuda()
         model_dict = util.transfer(self.model, torch.load(model_path))
         self.model.load_state_dict(model_dict)
+        self.model.to(self.device)
         self.model.eval()
 
     def __call__(self, oriImg):
@@ -38,8 +38,7 @@ class Hand(object):
             im = np.ascontiguousarray(im)
 
             data = torch.from_numpy(im).float()
-            if torch.cuda.is_available():
-                data = data.cuda()
+            data = data.to(self.device)
             # data = data.permute([2, 0, 1]).unsqueeze(0).float()
             with torch.no_grad():
                 output = self.model(data).cpu().numpy()
