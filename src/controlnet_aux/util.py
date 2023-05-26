@@ -1,7 +1,7 @@
-import numpy as np
-import cv2
 import os
 
+import cv2
+import numpy as np
 
 annotator_ckpts_path = os.path.join(os.path.dirname(__file__), 'ckpts')
 
@@ -43,6 +43,22 @@ def safe_step(x, step=2):
     y = y.astype(np.int32).astype(np.float32) / float(step)
     return y
 
+def nms(x, t, s):
+    x = cv2.GaussianBlur(x.astype(np.float32), (0, 0), s)
+
+    f1 = np.array([[0, 0, 0], [1, 1, 1], [0, 0, 0]], dtype=np.uint8)
+    f2 = np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0]], dtype=np.uint8)
+    f3 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.uint8)
+    f4 = np.array([[0, 0, 1], [0, 1, 0], [1, 0, 0]], dtype=np.uint8)
+
+    y = np.zeros_like(x)
+
+    for f in [f1, f2, f3, f4]:
+        np.putmask(y, cv2.dilate(x, kernel=f) == x, x)
+
+    z = np.zeros_like(y, dtype=np.uint8)
+    z[y > t] = 255
+    return z
 
 def ade_palette():
     """ADE20K palette that maps each class to RGB values."""
