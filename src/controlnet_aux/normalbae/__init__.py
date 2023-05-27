@@ -1,24 +1,35 @@
 import os
 import types
-import torch
+
 import numpy as np
+import torch
+import torchvision.transforms as transforms
+from einops import rearrange
+from huggingface_hub import hf_hub_download
 from PIL import Image
 
-from ..open_pose.util import HWC3, resize_image
-from einops import rearrange
+from ..util import HWC3, resize_image
 from .nets.NNET import NNET
-from huggingface_hub import hf_hub_download
-from .utils import utils
-import torchvision.transforms as transforms
 
+
+# load model
+def load_checkpoint(fpath, model):
+    ckpt = torch.load(fpath, map_location='cpu')['model']
+
+    load_dict = {}
+    for k, v in ckpt.items():
+        if k.startswith('module.'):
+            k_ = k.replace('module.', '')
+            load_dict[k_] = v
+        else:
+            load_dict[k] = v
+
+    model.load_state_dict(load_dict)
+    return model
 
 class NormalBaeDetector:
     def __init__(self, model):
-        self.model = model.eval()
-
-        if torch.cuda.is_available():
-            self.model.cuda()
-
+        self.model = model
         self.norm = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
     @classmethod
@@ -37,12 +48,18 @@ class NormalBaeDetector:
         args.sampling_ratio = 0.4
         args.importance_ratio = 0.7
         model = NNET(args)
-        model = utils.load_checkpoint(model_path, model)
+        model = load_checkpoint(model_path, model)
+        model.eval()
 
         return cls(model)
 
+    def to(self, device):
+        self.model.to(device)
+        return self
+
 
     def __call__(self, input_image, detect_resolution=512, image_resolution=512, return_pil=True):
+        device = next(iter(self.model.parameters())).device
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
 
@@ -52,10 +69,7 @@ class NormalBaeDetector:
         assert input_image.ndim == 3
         image_normal = input_image
         with torch.no_grad():
-            image_normal = torch.from_numpy(image_normal).float()
-            model_device = next(iter(self.model.parameters())).device
-            image_normal = image_normal.to(model_device)
-
+            image_normal = torch.from_numpy(image_normal).float().to(device)
             image_normal = image_normal / 255.0
             image_normal = rearrange(image_normal, 'h w c -> 1 c h w')
             image_normal = self.norm(image_normal)
@@ -70,9 +84,10 @@ class NormalBaeDetector:
             normal = rearrange(normal[0], 'c h w -> h w c').cpu().numpy()
             normal_image = (normal * 255.0).clip(0, 255).astype(np.uint8)
 
-            img = resize_image(normal_image, image_resolution)
+        img = resize_image(normal_image, image_resolution)
 
-            if return_pil:
-                img = Image.fromarray(img)
+        if return_pil:
+            img = Image.fromarray(img)
 
-            return img
+        return img
+    

@@ -1,14 +1,14 @@
 import os
-import cv2
-import torch
-import numpy as np
 
-from huggingface_hub import hf_hub_download
+import cv2
+import numpy as np
+import torch
 import torch.nn as nn
 from einops import rearrange
+from huggingface_hub import hf_hub_download
 from PIL import Image
-from ..open_pose.util import HWC3, resize_image
 
+from ..util import HWC3, resize_image
 
 norm_layer = nn.InstanceNorm2d
 
@@ -92,12 +92,8 @@ class Generator(nn.Module):
 
 class LineartDetector:
     def __init__(self, model, coarse_model):
-        self.model = model.eval()
-        self.model_coarse = coarse_model.eval()
-
-        if torch.cuda.is_available():
-            self.model.cuda()
-            self.model_coarse.cuda()
+        self.model = model
+        self.model_coarse = coarse_model
 
     @classmethod
     def from_pretrained(cls, pretrained_model_or_path, filename=None, coarse_filename=None, cache_dir=None):
@@ -113,12 +109,19 @@ class LineartDetector:
 
         model = Generator(3, 1, 3)
         model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+        model.eval()
 
         coarse_model = Generator(3, 1, 3)
         coarse_model.load_state_dict(torch.load(coarse_model_path, map_location=torch.device('cpu')))
+        coarse_model.eval()
 
         return cls(model, coarse_model)
-
+    
+    def to(self, device):
+        self.model.to(device)
+        self.model_coarse.to(device)
+        return self
+    
     def __call__(self, input_image, coarse=False, detect_resolution=512, image_resolution=512, return_pil=True):
         device = next(iter(self.model.parameters())).device
         if not isinstance(input_image, np.ndarray):

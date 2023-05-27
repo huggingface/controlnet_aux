@@ -6,9 +6,10 @@ import functools
 import os
 import cv2
 from einops import rearrange
-from PIL import Image
-from ..open_pose.util import HWC3, resize_image
 from huggingface_hub import hf_hub_download
+from PIL import Image
+
+from ..util import HWC3, resize_image
 
 
 class UnetGenerator(nn.Module):
@@ -113,10 +114,7 @@ class UnetSkipConnectionBlock(nn.Module):
 
 class LineartAnimeDetector:
     def __init__(self, model):
-        self.model = model.eval()
-
-        if torch.cuda.is_available():
-            self.model.cuda()
+        self.model = model
 
     @classmethod
     def from_pretrained(cls, pretrained_model_or_path, filename=None, cache_dir=None):
@@ -135,9 +133,14 @@ class LineartAnimeDetector:
                 ckpt[key.replace('module.', '')] = ckpt[key]
                 del ckpt[key]
         net.load_state_dict(ckpt)
+        net.eval()
 
         return cls(net)
 
+    def to(self, device):
+        self.model.to(device)
+        return self
+    
     def __call__(self, input_image, detect_resolution=512, image_resolution=512, return_pil=True):
         device = next(iter(self.model.parameters())).device
         if not isinstance(input_image, np.ndarray):
