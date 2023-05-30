@@ -2,11 +2,13 @@
 This file contains a Processor that can be used to process images with controlnet aux processors
 """
 import io
+import logging
 from typing import Union
 
 from PIL import Image
 import numpy as np
 import torch
+
 from controlnet_aux import (HEDdetector,
                             MidasDetector,
                             MLSDdetector,
@@ -20,6 +22,7 @@ from controlnet_aux import (HEDdetector,
                             ZoeDetector,
                             MediapipeFaceDetector)
 
+CHOICES = "Choices for the processor are hed, midas, mlsd, openpose, pidinet, normalbae, lineart, lineart_coarse, lineart_anime, canny, content_shuffle, zoe, mediapipe_face"
 
 MODELS = {
     # checkpoint models
@@ -39,8 +42,9 @@ MODELS = {
     'canny': {'class': CannyDetector, 'checkpoint': False},
 }
 
-# @patrickvonplaten, I can change this so people can pass their own parameters
-# but for my use case I'm using this Dictionary
+LOGGER = logging.getLogger(__name__)
+
+
 MODEL_PARAMS = {
     'hed': {'resize': False},
     'midas': {'resize': 512},
@@ -63,19 +67,20 @@ class Processor:
         """Processor that can be used to process images with controlnet aux processors
 
         Args:
-            processor_id (str): processor name
+            processor_id (str): processor name, options are 'hed, midas, mlsd, openpose,
+                                pidinet, normalbae, lineart, lineart_coarse, lineart_anime,
+                                canny, content_shuffle, zoe, mediapipe_face
 
         Returns:
             Processor: Processor object
         """
-        print(f"Loading {processor_id} processor")
+        LOGGER.info("Loading %s".format(processor_id))
         self.processor_id = processor_id
         self.processor = self.load_processor(self.processor_id)
         self.params = MODEL_PARAMS[self.processor_id]
         self.resize = self.params.pop('resize', False)
         if self.resize:
-            # print warning: image will be resized
-            print(f"Warning: {self.processor_id} will resize image to {self.resize}x{self.resize}")
+            LOGGER.warning(f"Warning: {self.processor_id} will resize image to {self.resize}x{self.resize}")
 
     def load_processor(self, processor_id: str):
         """Load controlnet aux processors
@@ -83,6 +88,9 @@ class Processor:
         Args:
             processor_id (str): processor name
         """
+        if processor_id not in MODELS:
+            raise ValueError(f"Processor {processor_id} not found. {CHOICES}")
+
         processor = MODELS[processor_id]['class']
 
         if MODELS[processor_id]['checkpoint']:
