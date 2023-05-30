@@ -1,19 +1,20 @@
+import os
+
 import cv2
 import numpy as np
 import torch
-import os
-
+from einops import rearrange
 from huggingface_hub import hf_hub_download
-from .models.mbv2_mlsd_tiny import MobileV2_MLSD_Tiny
+from PIL import Image
+
+from ..util import HWC3, resize_image
 from .models.mbv2_mlsd_large import MobileV2_MLSD_Large
 from .utils import pred_lines
-from PIL import Image
-from ..open_pose.util import HWC3, resize_image
 
 
 class MLSDdetector:
     def __init__(self, model):
-        self.model = model.eval()
+        self.model = model
 
     @classmethod
     def from_pretrained(cls, pretrained_model_or_path, filename=None, cache_dir=None):
@@ -29,9 +30,14 @@ class MLSDdetector:
 
         model = MobileV2_MLSD_Large()
         model.load_state_dict(torch.load(model_path), strict=True)
+        model.eval()
 
         return cls(model)
 
+    def to(self, device):
+        self.model.to(device)
+        return self
+    
     def __call__(self, input_image, thr_v=0.1, thr_d=0.1, detect_resolution=512, image_resolution=512, return_pil=True):
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)

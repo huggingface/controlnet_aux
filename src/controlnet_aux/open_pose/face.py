@@ -1,12 +1,12 @@
 import logging
+
 import numpy as np
-from torchvision.transforms import ToTensor, ToPILImage
 import torch
 import torch.nn.functional as F
-import cv2
+from torch.nn import Conv2d, MaxPool2d, Module, ReLU, init
+from torchvision.transforms import ToPILImage, ToTensor
 
 from . import util
-from torch.nn import Conv2d, Module, ReLU, MaxPool2d, init
 
 
 class FaceNet(Module):
@@ -314,25 +314,29 @@ class Face(object):
         heatmap_peak_thresh: return landmark if over threshold, default 0.1
 
     """
-    def __init__(self, face_model_path, device,
+    def __init__(self, face_model_path,
                  inference_size=None,
                  gaussian_sigma=None,
                  heatmap_peak_thresh=None):
-        self.device = device
         self.inference_size = inference_size or params["inference_img_size"]
         self.sigma = gaussian_sigma or params['gaussian_sigma']
         self.threshold = heatmap_peak_thresh or params["heatmap_peak_thresh"]
         self.model = FaceNet()
         self.model.load_state_dict(torch.load(face_model_path))
-        self.model.to(self.device)
         self.model.eval()
 
+    def to(self, device):
+        self.model.to(device)
+        return self
+
     def __call__(self, face_img):
+        device = next(iter(self.model.parameters())).device
         H, W, C = face_img.shape
 
         w_size = 384
         x_data = torch.from_numpy(util.smart_resize(face_img, (w_size, w_size))).permute([2, 0, 1]) / 256.0 - 0.5
-        x_data = x_data.to(self.device)
+
+        x_data = x_data.to(device)
 
         with torch.no_grad():
             hs = self.model(x_data[None, ...])
@@ -358,74 +362,3 @@ class Face(object):
             all_peaks.append([x, y])
 
         return np.array(all_peaks)
-
-
-# Written by Lvmin
-def faceDetect(candidate, subset, oriImg):
-    # left right eye ear 14 15 16 17
-    detect_result = []
-    image_height, image_width = oriImg.shape[0:2]
-    for person in subset.astype(int):
-        has_head = person[0] > -1
-        if not has_head:
-            continue
-
-        has_left_eye = person[14] > -1
-        has_right_eye = person[15] > -1
-        has_left_ear = person[16] > -1
-        has_right_ear = person[17] > -1
-
-        if not (has_left_eye or has_right_eye or has_left_ear or has_right_ear):
-            continue
-
-        head, left_eye, right_eye, left_ear, right_ear = person[[0, 14, 15, 16, 17]]
-
-        width = 0.0
-        x0, y0 = candidate[head][:2]
-
-        if has_left_eye:
-            x1, y1 = candidate[left_eye][:2]
-            d = max(abs(x0 - x1), abs(y0 - y1))
-            width = max(width, d * 3.0)
-
-        if has_right_eye:
-            x1, y1 = candidate[right_eye][:2]
-            d = max(abs(x0 - x1), abs(y0 - y1))
-            width = max(width, d * 3.0)
-
-        if has_left_ear:
-            x1, y1 = candidate[left_ear][:2]
-            d = max(abs(x0 - x1), abs(y0 - y1))
-            width = max(width, d * 1.5)
-
-        if has_right_ear:
-            x1, y1 = candidate[right_ear][:2]
-            d = max(abs(x0 - x1), abs(y0 - y1))
-            width = max(width, d * 1.5)
-
-        x, y = x0, y0
-
-        x -= width
-        y -= width
-
-        if x < 0:
-            x = 0
-
-        if y < 0:
-            y = 0
-
-        width1 = width * 2
-        width2 = width * 2
-
-        if x + width > image_width:
-            width1 = image_width - x
-
-        if y + width > image_height:
-            width2 = image_height - y
-
-        width = min(width1, width2)
-
-        if width >= 20:
-            detect_result.append([int(x), int(y), int(width)])
-
-    return detect_result
