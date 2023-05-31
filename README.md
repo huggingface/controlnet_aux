@@ -39,7 +39,7 @@ processor = Processor(processor_id)
 processed_image = processor(image, to_pil=True)
 ```
 
-Each model can be loaded individually by importing and instantiating them as follows:
+Each model can be loaded individually by importing and instantiating them as follows
 ```python
 from PIL import Image
 import requests
