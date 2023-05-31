@@ -177,6 +177,7 @@ install_requires = [
     deps["torchvision"],
     deps["timm"],
     deps["scikit-image"],
+    deps["mediapipe"],
 ]
 
 setup(

@@ -174,3 +174,5 @@ tags
 .ruff_cache
 
 wandb
+
+src/controlnet_aux/main.py
