@@ -58,12 +58,12 @@ class MLSDdetector:
             pass
 
         detected_map = img_output[:, :, 0]
-
         detected_map = HWC3(detected_map)
+
         img = resize_image(input_image, image_resolution)
         H, W, C = img.shape
 
-        detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_NEAREST)
+        detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)
 
         if return_pil:
             detected_map = Image.fromarray(detected_map)

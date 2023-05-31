@@ -42,19 +42,19 @@ MODELS = {
 # @patrickvonplaten, I can change this so people can pass their own parameters
 # but for my use case I'm using this Dictionary
 MODEL_PARAMS = {
-    'hed': {'resize': False},
-    'midas': {'resize': 512},
-    'mlsd': {'resize': False},
-    'openpose': {'resize': False, 'hand_and_face': True},
-    'pidinet': {'resize': False, 'safe': True},
-    'normalbae': {'resize': False},
-    'lineart': {'resize': False, 'coarse': True},
-    'lineart_coarse': {'resize': False, 'coarse': True},
-    'lineart_anime': {'resize': False},
-    'canny': {'resize': False},
-    'content_shuffle': {'resize': False},
-    'zoe': {'resize': False},
-    'mediapipe_face': {'resize': False},
+    'hed': {},
+    'midas': {},
+    'mlsd': {},
+    'openpose': {'hand_and_face': True},
+    'pidinet': {'safe': True},
+    'normalbae': {},
+    'lineart': {'coarse': True},
+    'lineart_coarse': {'coarse': True},
+    'lineart_anime': {},
+    'canny': {},
+    'content_shuffle': {},
+    'zoe': {},
+    'mediapipe_face': {},
 }
 
 
@@ -72,10 +72,6 @@ class Processor:
         self.processor_id = processor_id
         self.processor = self.load_processor(self.processor_id)
         self.params = MODEL_PARAMS[self.processor_id]
-        self.resize = self.params.pop('resize', False)
-        if self.resize:
-            # print warning: image will be resized
-            print(f"Warning: {self.processor_id} will resize image to {self.resize}x{self.resize}")
 
     def load_processor(self, processor_id: str):
         """Load controlnet aux processors
@@ -105,9 +101,6 @@ class Processor:
         # check if bytes or PIL Image
         if isinstance(image, bytes):
             image = Image.open(io.BytesIO(image)).convert("RGB")
-
-        if self.resize:
-            image = image.resize((self.resize, self.resize))
 
         processed_image = self.processor(image, **self.params)
 

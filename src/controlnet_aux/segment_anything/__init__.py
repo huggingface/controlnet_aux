@@ -3,23 +3,18 @@
 
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
+
 import os
-from PIL import Image
+
+import cv2
 import numpy as np
 import torch
-import gc
-
 from huggingface_hub import hf_hub_download
+from PIL import Image
 
-from .build_sam import (
-    build_sam,
-    build_sam_vit_h,
-    build_sam_vit_l,
-    build_sam_vit_b,
-    sam_model_registry,
-)
-from .predictor import SamPredictor
+from ..util import HWC3, resize_image
 from .automatic_mask_generator import SamAutomaticMaskGenerator
+from .build_sam import sam_model_registry
 
 
 class SamDetector:
@@ -27,7 +22,7 @@ class SamDetector:
         self.mask_generator = mask_generator
     
     @classmethod
-    def from_pretrained(cls, pretrained_model_or_path, model_type="vit_h", filename="sam_vit_h_4b8939.pth", cache_dir=None):
+    def from_pretrained(cls, pretrained_model_or_path, model_type="vit_h", filename="sam_vit_h_4b8939.pth", subfolder=None, cache_dir=None):
         """
         Possible model_type : vit_h, vit_l, vit_b
         download weights from https://github.com/facebookresearch/segment-anything
@@ -35,7 +30,7 @@ class SamDetector:
         if os.path.isdir(pretrained_model_or_path):
             model_path = os.path.join(pretrained_model_or_path, filename)
         else:
-            model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)  
+            model_path = hf_hub_download(pretrained_model_or_path, filename, subfolder=subfolder, cache_dir=cache_dir)  
         
         sam = sam_model_registry[model_type](checkpoint=model_path)
         
@@ -60,17 +55,29 @@ class SamDetector:
                 img[:,:,i] = np.random.randint(255, dtype=np.uint8)
             final_img.paste(Image.fromarray(img, mode="RGB"), (0, 0), Image.fromarray(np.uint8(m*255)))
         
-        return final_img
+        return np.array(final_img, dtype=np.uint8)
 
-    def __call__(self, image: Image.Image) -> Image.Image:
+    def __call__(self, input_image: Image.Image, detect_resolution=512, image_resolution=512, return_pil=True) -> Image.Image:
+        if not isinstance(input_image, np.ndarray):
+            input_image = np.array(input_image, dtype=np.uint8)
+        
+        input_image = HWC3(input_image)
+        input_image = resize_image(input_image, detect_resolution)
+
         # Generate Masks
-        if isinstance(image, Image.Image):
-            image = np.array(image)
-
-        masks = self.mask_generator.generate(image)
-        torch.cuda.empty_cache()
+        masks = self.mask_generator.generate(input_image)
         # Create map
         map = self.show_anns(masks)
-        del masks
-        gc.collect()
-        return map
+
+        detected_map = map
+        detected_map = HWC3(detected_map)
+
+        img = resize_image(input_image, image_resolution)
+        H, W, C = img.shape
+
+        detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)
+        
+        if return_pil:
+            detected_map = Image.fromarray(detected_map)
+
+        return detected_map

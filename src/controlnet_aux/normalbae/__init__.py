@@ -1,6 +1,7 @@
 import os
 import types
 
+import cv2
 import numpy as np
 import torch
 import torchvision.transforms as transforms
@@ -84,10 +85,16 @@ class NormalBaeDetector:
             normal = rearrange(normal[0], 'c h w -> h w c').cpu().numpy()
             normal_image = (normal * 255.0).clip(0, 255).astype(np.uint8)
 
-        img = resize_image(normal_image, image_resolution)
+        detected_map = normal_image
+        detected_map = HWC3(detected_map)      
+
+        img = resize_image(input_image, image_resolution)
+        H, W, C = img.shape
+
+        detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)
 
         if return_pil:
-            img = Image.fromarray(img)
+            detected_map = Image.fromarray(detected_map)
 
-        return img
+        return detected_map
     

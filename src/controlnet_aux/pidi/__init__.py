@@ -34,7 +34,7 @@ class PidiNetDetector:
         self.netNetwork.to(device)
         return self
     
-    def __call__(self, input_image, detect_resolution=512, image_resolution=512, safe=False, return_pil=True, scribble=False, apply_filter=False):
+    def __call__(self, input_image, apply_filter=False, safe=False, scribble=False, detect_resolution=512, image_resolution=512, return_pil=True):
         device = next(iter(self.netNetwork.parameters())).device
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
@@ -56,7 +56,6 @@ class PidiNetDetector:
             edge = (edge * 255.0).clip(0, 255).astype(np.uint8)
 
         detected_map = edge[0, 0]
-
         detected_map = HWC3(detected_map)
 
         img = resize_image(input_image, image_resolution)

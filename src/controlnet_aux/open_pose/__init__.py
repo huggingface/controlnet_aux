@@ -196,7 +196,7 @@ class OpenposeDetector:
             
             return results
         
-    def __call__(self, input_image, detect_resolution=512, image_resolution=512, include_body=True, include_hand=False, include_face=False, hand_and_face=False, return_pil=True):
+    def __call__(self, input_image, include_body=True, include_hand=False, include_face=False, hand_and_face=False, detect_resolution=512, image_resolution=512, return_pil=True):
         if hand_and_face:
             warnings.warn("hand_and_face is deprecated. Use include_hand and include_face instead.", DeprecationWarning)
             include_hand = True
@@ -211,11 +211,14 @@ class OpenposeDetector:
         
         poses = self.detect_poses(input_image, include_hand, include_face)
         canvas = draw_poses(poses, H, W, draw_body=include_body, draw_hand=include_hand, draw_face=include_face) 
-        detected_map = HWC3(canvas)
+
+        detected_map = canvas
+        detected_map = HWC3(detected_map)
+        
         img = resize_image(input_image, image_resolution)
         H, W, C = img.shape
 
-        detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_NEAREST)
+        detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)
 
         if return_pil:
             detected_map = Image.fromarray(detected_map)
