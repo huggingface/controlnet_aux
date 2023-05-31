@@ -20,44 +20,63 @@ from controlnet_aux import (HEDdetector,
                             ZoeDetector,
                             MediapipeFaceDetector)
 
-CHOICES = "Choices for the processor are hed, midas, mlsd, openpose, pidinet, normalbae, lineart, lineart_coarse, lineart_anime, canny, content_shuffle, zoe, mediapipe_face"
+LOGGER = logging.getLogger(__name__)
+
 
 MODELS = {
     # checkpoint models
-    'hed': {'class': HEDdetector, 'checkpoint': True},
-    'midas': {'class': MidasDetector, 'checkpoint': True},
+    'scribble_hed': {'class': HEDdetector, 'checkpoint': True},
+    'softedge_hed': {'class': HEDdetector, 'checkpoint': True},
+    'scribble_hedsafe': {'class': HEDdetector, 'checkpoint': True},
+    'softedge_hedsafe': {'class': HEDdetector, 'checkpoint': True},
+    'depth_midas': {'class': MidasDetector, 'checkpoint': True},
     'mlsd': {'class': MLSDdetector, 'checkpoint': True},
     'openpose': {'class': OpenposeDetector, 'checkpoint': True},
-    'pidinet': {'class': PidiNetDetector, 'checkpoint': True},
-    'normalbae': {'class': NormalBaeDetector, 'checkpoint': True},
-    'lineart': {'class': LineartDetector, 'checkpoint': True},
+    'openpose_face': {'class': OpenposeDetector, 'checkpoint': True},
+    'openpose_faceonly': {'class': OpenposeDetector, 'checkpoint': True},
+    'openpose_full': {'class': OpenposeDetector, 'checkpoint': True},
+    'scribble_pidinet': {'class': PidiNetDetector, 'checkpoint': True},
+    'softedge_pidinet': {'class': PidiNetDetector, 'checkpoint': True},
+    'scribble_pidsafe': {'class': PidiNetDetector, 'checkpoint': True},
+    'softedge_pidsafe': {'class': PidiNetDetector, 'checkpoint': True},
+    'normal_bae': {'class': NormalBaeDetector, 'checkpoint': True},
     'lineart_coarse': {'class': LineartDetector, 'checkpoint': True},
+    'lineart_realistic': {'class': LineartDetector, 'checkpoint': True},
     'lineart_anime': {'class': LineartAnimeDetector, 'checkpoint': True},
-    'zoe': {'class': ZoeDetector, 'checkpoint': True}, 
+    'depth_zoe': {'class': ZoeDetector, 'checkpoint': True}, 
     # instantiate
-    'content_shuffle': {'class': ContentShuffleDetector, 'checkpoint': False},
+    'shuffle': {'class': ContentShuffleDetector, 'checkpoint': False},
     'mediapipe_face': {'class': MediapipeFaceDetector, 'checkpoint': False},
     'canny': {'class': CannyDetector, 'checkpoint': False},
 }
 
-LOGGER = logging.getLogger(__name__)
-
 
 MODEL_PARAMS = {
-    'hed': {'resize': False},
-    'midas': {'resize': 512},
+    'scribble_hed': {'resize': False, 'scribble': True},
+    'softedge_hed': {'resize': False, 'scribble': False},
+    'scribble_hedsafe': {'resize': False, 'scribble': True, 'safe': True},
+    'softedge_hedsafe': {'resize': False, 'scribble': False, 'safe': True},
+    'depth_midas': {'resize': 512},
     'mlsd': {'resize': False},
-    'openpose': {'resize': False, 'hand_and_face': True},
-    'pidinet': {'resize': False, 'safe': True},
-    'normalbae': {'resize': False},
-    'lineart': {'resize': False, 'coarse': True},
+    'openpose': {'resize': False, 'hand_and_face': False},
+    'openpose_face': {'resize': False, 'hand_and_face': True},
+    'openpose_faceonly': {'resize': False, 'include_body': False, 'include_face': True},
+    'openpose_full': {'resize': False, 'hand_and_face': True},
+    'scribble_pidinet': {'resize': False, 'safe': False, 'scribble': True},
+    'softedge_pidinet': {'resize': False, 'safe': False, 'scribble': False},
+    'scribble_pidsafe': {'resize': False, 'safe': True, 'scribble': True},
+    'softedge_pidsafe': {'resize': False, 'safe': True, 'scribble': False},
+    'normal_bae': {'resize': False},
+    'lineart_realistic': {'resize': False, 'coarse': False},
     'lineart_coarse': {'resize': False, 'coarse': True},
     'lineart_anime': {'resize': False},
     'canny': {'resize': False},
-    'content_shuffle': {'resize': False},
-    'zoe': {'resize': False},
+    'shuffle': {'resize': False},
+    'depth_zoe': {'resize': False},
     'mediapipe_face': {'resize': False},
 }
+
+CHOICES = f"Choices for the processor are {list(MODELS.keys())}"
 
 
 class Processor:

@@ -30,9 +30,10 @@ img = Image.open(BytesIO(response.content)).convert("RGB").resize((512, 512))
 
 # load processor from processor_id
 # options are:
-# ["hed", "midas", "mlsd", "openpose",
-# "pidinet", "normalbae", "lineart", "lineart_coarse",
-# "lineart_anime", "canny", "content_shuffle", "zoe", "mediapipe_face"]
+# ["canny", "depth_midas", "depth_zoe", "lineart_anime", "lineart_coarse", "lineart_realistic",
+#  "mediapipe_face", "mlsd", "normal_bae", "normal_midas", "openpose", "openpose_face", "openpose_faceonly",
+#  "openpose_full", "openpose_hand", "scribble_hed, "scribble_pidinet", "shuffle", "softedge_hed",
+#  "softedge_hedsafe", "softedge_pidinet", "softedge_pidsafe"]
 processor_id = 'hed'
 processor = Processor(processor_id)
 
