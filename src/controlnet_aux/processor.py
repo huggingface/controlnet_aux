@@ -3,11 +3,9 @@ This file contains a Processor that can be used to process images with controlne
 """
 import io
 import logging
-from typing import Union
+from typing import Union, Dict, Optional
 
 from PIL import Image
-import numpy as np
-import torch
 
 from controlnet_aux import (HEDdetector,
                             MidasDetector,
@@ -63,33 +61,44 @@ MODEL_PARAMS = {
 
 
 class Processor:
-    def __init__(self, processor_id: str):
+    def __init__(self, processor_id: str, params: Optional[Dict] = None) -> None:
         """Processor that can be used to process images with controlnet aux processors
 
         Args:
             processor_id (str): processor name, options are 'hed, midas, mlsd, openpose,
                                 pidinet, normalbae, lineart, lineart_coarse, lineart_anime,
                                 canny, content_shuffle, zoe, mediapipe_face
+            params (Optional[Dict]): parameters for the processor
         """
         LOGGER.info("Loading %s".format(processor_id))
         self.processor_id = processor_id
         self.processor = self.load_processor(self.processor_id)
+
+        # load default params
         self.params = MODEL_PARAMS[self.processor_id]
+        # update with user params
+        if params:
+            self.params.update(params)
+
         self.resize = self.params.pop('resize', False)
         if self.resize:
             LOGGER.warning(f"Warning: {self.processor_id} will resize image to {self.resize}x{self.resize}")
 
-    def load_processor(self, processor_id: str):
+    def load_processor(self, processor_id: str) -> 'Processor':
         """Load controlnet aux processors
 
         Args:
             processor_id (str): processor name
+
+        Returns:
+            Processor: controlnet aux processor
         """
         if processor_id not in MODELS:
             raise ValueError(f"Processor {processor_id} not found. {CHOICES}")
 
         processor = MODELS[processor_id]['class']
 
+        # check if the proecssor is a checkpoint model
         if MODELS[processor_id]['checkpoint']:
             processor = processor.from_pretrained("lllyasviel/Annotators")
         else:
