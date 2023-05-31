@@ -63,16 +63,13 @@ MODEL_PARAMS = {
 
 
 class Processor:
-    def __init__(self, processor_id: str) -> 'Processor':
+    def __init__(self, processor_id: str):
         """Processor that can be used to process images with controlnet aux processors
 
         Args:
             processor_id (str): processor name, options are 'hed, midas, mlsd, openpose,
                                 pidinet, normalbae, lineart, lineart_coarse, lineart_anime,
                                 canny, content_shuffle, zoe, mediapipe_face
-
-        Returns:
-            Processor: Processor object
         """
         LOGGER.info("Loading %s".format(processor_id))
         self.processor_id = processor_id
