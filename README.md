@@ -14,6 +14,32 @@ pip install controlnet-aux==0.0.5
 
 ## Usage
 
+
+You can use the processor class, which can load each of the auxiliary models with the following code
+```python
+import requests
+from PIL import Image
+
+from controlnet_aux.processor import Processor
+
+# load image
+url = "https://huggingface.co/lllyasviel/sd-controlnet-openpose/resolve/main/images/pose.png"
+
+response = requests.get(url)
+img = Image.open(BytesIO(response.content)).convert("RGB").resize((512, 512))
+
+# load processor from processor_id
+# options are:
+# ["hed", "midas", "mlsd", "openpose",
+# "pidinet", "normalbae", "lineart", "lineart_coarse",
+# "lineart_anime", "canny", "content_shuffle", "zoe", "mediapipe_face"]
+processor_id = 'hed'
+processor = Processor(processor_id)
+
+processed_image = processor(image, to_pil=True)
+```
+
+Each model can be loaded individually by importing and instantiating them as follows:
 ```python
 from PIL import Image
 import requests
@@ -58,28 +84,4 @@ processed_image_zoe = zoe(img)
 processed_image_canny = canny(img)
 processed_image_content = content(img)
 processed_image_mediapipe_face = face_detector(img)
-```
-
-You can use the processor class, which can load each of the auxiliary models with the following code
-```python
-import requests
-from PIL import Image
-
-from controlnet_aux.processor import Processor
-
-# load image
-url = "https://huggingface.co/lllyasviel/sd-controlnet-openpose/resolve/main/images/pose.png"
-
-response = requests.get(url)
-img = Image.open(BytesIO(response.content)).convert("RGB").resize((512, 512))
-
-# load processor from processor_id
-# options are:
-# ["hed", "midas", "mlsd", "openpose",
-# "pidinet", "normalbae", "lineart", "lineart_coarse",
-# "lineart_anime", "canny", "content_shuffle", "zoe", "mediapipe_face"]
-processor_id = 'hed'
-processor = Processor(processor_id)
-
-processed_image = processor(image, to_pil=True)
 ```
