@@ -81,5 +81,5 @@ img = Image.open(BytesIO(response.content)).convert("RGB").resize((512, 512))
 processor_id = 'hed'
 processor = Processor(processor_id)
 
-processed_image = processor(image, to_bytes=False)
+processed_image = processor(image, to_pil=True)
 ```

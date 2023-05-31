@@ -106,12 +106,12 @@ class Processor:
         return processor
 
     def __call__(self, image: Union[Image.Image, bytes],
-                 to_bytes: bool = True) -> Union[Image.Image, bytes]:
+                 to_pil: bool = True) -> Union[Image.Image, bytes]:
         """processes an image with a controlnet aux processor
 
         Args:
             image (Union[Image.Image, bytes]): input image in bytes or PIL Image
-            to_bytes (bool): whether to return bytes or PIL Image
+            to_pil (bool): whether to return bytes or PIL Image
 
         Returns:
             Union[Image.Image, bytes]: processed image in bytes or PIL Image
@@ -125,9 +125,9 @@ class Processor:
 
         processed_image = self.processor(image, **self.params)
 
-        if to_bytes:
+        if to_pil:
+            return processed_image
+        else:
             output_bytes = io.BytesIO()
             processed_image.save(output_bytes, format='JPEG')
             return output_bytes.getvalue()
-        else:
-            return processed_image
