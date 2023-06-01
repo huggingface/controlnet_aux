@@ -36,10 +36,13 @@ class ZoeDetector:
         self.model.to(device)
         return self
     
-    def __call__(self, input_image, detect_resolution=512, image_resolution=512, return_pil=True):
+    def __call__(self, input_image, detect_resolution=512, image_resolution=512, output_type=None):
         device = next(iter(self.model.parameters())).device
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
+            output_type = output_type or "pil"
+        else:
+            output_type = output_type or "np"
         
         input_image = HWC3(input_image)
         input_image = resize_image(input_image, detect_resolution)
@@ -70,7 +73,7 @@ class ZoeDetector:
 
         detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)
         
-        if return_pil:
+        if output_type == "pil":
             detected_map = Image.fromarray(detected_map)
             
         return detected_map

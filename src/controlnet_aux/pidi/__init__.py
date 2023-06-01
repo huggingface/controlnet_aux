@@ -1,4 +1,5 @@
 import os
+import warnings
 
 import cv2
 import numpy as np
@@ -34,7 +35,11 @@ class PidiNetDetector:
         self.netNetwork.to(device)
         return self
     
-    def __call__(self, input_image, apply_filter=False, safe=False, scribble=False, detect_resolution=512, image_resolution=512, return_pil=True):
+    def __call__(self, input_image, detect_resolution=512, image_resolution=512, safe=False, return_pil=None, scribble=False, apply_filter=False, output_type="pil"):
+        if return_pil is not None:
+            warnings.warn("return_pil is deprecated. Use output_type instead.", DeprecationWarning)
+            output_type = "pil" if return_pil else "np"
+
         device = next(iter(self.netNetwork.parameters())).device
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
@@ -69,7 +74,7 @@ class PidiNetDetector:
             detected_map[detected_map > 4] = 255
             detected_map[detected_map < 255] = 0
 
-        if return_pil:
+        if output_type == "pil":
             detected_map = Image.fromarray(detected_map)
 
         return detected_map

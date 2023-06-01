@@ -196,11 +196,14 @@ class OpenposeDetector:
             
             return results
         
-    def __call__(self, input_image, include_body=True, include_hand=False, include_face=False, hand_and_face=False, detect_resolution=512, image_resolution=512, return_pil=True):
-        if hand_and_face:
+    def __call__(self, input_image, detect_resolution=512, image_resolution=512, include_body=True, include_hand=False, include_face=False, hand_and_face=None, return_pil=None, output_type="pil"):
+        if hand_and_face is not None:
             warnings.warn("hand_and_face is deprecated. Use include_hand and include_face instead.", DeprecationWarning)
-            include_hand = True
-            include_face = True
+            include_hand = hand_and_face
+            include_face = hand_and_face
+        if return_pil is not None:
+            warnings.warn("return_pil is deprecated. Use output_type instead.", DeprecationWarning)
+            output_type = "pil" if return_pil else "np"
 
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
@@ -220,7 +223,7 @@ class OpenposeDetector:
 
         detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)
 
-        if return_pil:
+        if output_type == "pil":
             detected_map = Image.fromarray(detected_map)
 
         return detected_map

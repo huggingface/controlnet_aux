@@ -57,7 +57,7 @@ class SamDetector:
         
         return np.array(final_img, dtype=np.uint8)
 
-    def __call__(self, input_image: Image.Image, detect_resolution=512, image_resolution=512, return_pil=True) -> Image.Image:
+    def __call__(self, input_image: Image.Image, detect_resolution=512, image_resolution=512, output_type="pil") -> Image.Image:
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
         
@@ -77,7 +77,7 @@ class SamDetector:
 
         detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)
         
-        if return_pil:
+        if output_type == "pil":
             detected_map = Image.fromarray(detected_map)
 
         return detected_map

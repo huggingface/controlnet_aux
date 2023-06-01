@@ -1,3 +1,4 @@
+import warnings
 from typing import Union
 
 import cv2
@@ -13,10 +14,15 @@ class MediapipeFaceDetector:
                  input_image: Union[np.ndarray, Image.Image],
                  max_faces: int = 1,
                  min_confidence: float = 0.5,
+                 return_pil: bool = None,
                  detect_resolution: int = 512,
                  image_resolution: int = 512,
-                 return_pil: bool = True):
+                 output_type: str = "pil"):
         
+        if return_pil is not None:
+            warnings.warn("return_pil is deprecated. Use output_type instead.", DeprecationWarning)
+            output_type = "pil" if return_pil else "np"
+
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
 
@@ -31,7 +37,7 @@ class MediapipeFaceDetector:
 
         detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)
         
-        if return_pil is True:
+        if output_type == "pil":
             detected_map = Image.fromarray(detected_map)
             
         return detected_map

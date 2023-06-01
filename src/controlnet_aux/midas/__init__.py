@@ -36,10 +36,13 @@ class MidasDetector:
         self.model.to(device)
         return self
     
-    def __call__(self, input_image, a=np.pi * 2.0, bg_th=0.1, depth_and_normal=False, detect_resolution=512, image_resolution=512, return_pil=True):
+    def __call__(self, input_image, a=np.pi * 2.0, bg_th=0.1, depth_and_normal=False, detect_resolution=512, image_resolution=512, output_type=None):
         device = next(iter(self.model.parameters())).device
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
+            output_type = output_type or "pil"
+        else:
+            output_type = output_type or "np"
         
         input_image = HWC3(input_image)
         input_image = resize_image(input_image, detect_resolution)
@@ -81,7 +84,7 @@ class MidasDetector:
         if depth_and_normal:
             normal_image = cv2.resize(normal_image, (W, H), interpolation=cv2.INTER_LINEAR)
         
-        if return_pil:
+        if output_type == "pil":
             depth_image = Image.fromarray(depth_image)
             if depth_and_normal:
                 normal_image = Image.fromarray(normal_image)

@@ -1,10 +1,11 @@
+import functools
+import os
+import warnings
+
+import cv2
 import numpy as np
 import torch
 import torch.nn as nn
-import functools
-
-import os
-import cv2
 from einops import rearrange
 from huggingface_hub import hf_hub_download
 from PIL import Image
@@ -141,7 +142,11 @@ class LineartAnimeDetector:
         self.model.to(device)
         return self
     
-    def __call__(self, input_image, detect_resolution=512, image_resolution=512, return_pil=True):
+    def __call__(self, input_image, detect_resolution=512, image_resolution=512, return_pil=None, output_type="pil"):
+        if return_pil is not None:
+            warnings.warn("return_pil is deprecated. Use output_type instead.", DeprecationWarning)
+            output_type = "pil" if return_pil else "np"
+
         device = next(iter(self.model.parameters())).device
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
@@ -174,7 +179,7 @@ class LineartAnimeDetector:
         detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)
         detected_map = 255 - detected_map
         
-        if return_pil:
+        if output_type == "pil":
             detected_map = Image.fromarray(detected_map)
 
         return detected_map

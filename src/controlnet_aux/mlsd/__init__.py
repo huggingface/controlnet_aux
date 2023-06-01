@@ -1,9 +1,9 @@
 import os
+import warnings
 
 import cv2
 import numpy as np
 import torch
-from einops import rearrange
 from huggingface_hub import hf_hub_download
 from PIL import Image
 
@@ -38,7 +38,11 @@ class MLSDdetector:
         self.model.to(device)
         return self
     
-    def __call__(self, input_image, thr_v=0.1, thr_d=0.1, detect_resolution=512, image_resolution=512, return_pil=True):
+    def __call__(self, input_image, thr_v=0.1, thr_d=0.1, detect_resolution=512, image_resolution=512, return_pil=None, output_type="pil"):
+        if return_pil is not None:
+            warnings.warn("return_pil is deprecated. Use output_type instead.", DeprecationWarning)
+            output_type = "pil" if return_pil else "np"
+
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
 
@@ -65,7 +69,7 @@ class MLSDdetector:
 
         detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)
 
-        if return_pil:
+        if output_type == "pil":
             detected_map = Image.fromarray(detected_map)
 
         return detected_map
