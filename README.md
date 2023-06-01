@@ -14,6 +14,33 @@ pip install controlnet-aux==0.0.5
 
 ## Usage
 
+
+You can use the processor class, which can load each of the auxiliary models with the following code
+```python
+import requests
+from PIL import Image
+
+from controlnet_aux.processor import Processor
+
+# load image
+url = "https://huggingface.co/lllyasviel/sd-controlnet-openpose/resolve/main/images/pose.png"
+
+response = requests.get(url)
+img = Image.open(BytesIO(response.content)).convert("RGB").resize((512, 512))
+
+# load processor from processor_id
+# options are:
+# ["canny", "depth_midas", "depth_zoe", "lineart_anime", "lineart_coarse", "lineart_realistic",
+#  "mediapipe_face", "mlsd", "normal_bae", "normal_midas", "openpose", "openpose_face", "openpose_faceonly",
+#  "openpose_full", "openpose_hand", "scribble_hed, "scribble_pidinet", "shuffle", "softedge_hed",
+#  "softedge_hedsafe", "softedge_pidinet", "softedge_pidsafe"]
+processor_id = 'scribble_hed'
+processor = Processor(processor_id)
+
+processed_image = processor(image, to_pil=True)
+```
+
+Each model can be loaded individually by importing and instantiating them as follows
 ```python
 from PIL import Image
 import requests
