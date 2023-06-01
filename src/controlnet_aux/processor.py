@@ -35,6 +35,7 @@ MODELS = {
     'openpose_face': {'class': OpenposeDetector, 'checkpoint': True},
     'openpose_faceonly': {'class': OpenposeDetector, 'checkpoint': True},
     'openpose_full': {'class': OpenposeDetector, 'checkpoint': True},
+    'openpose_hand': {'class': OpenposeDetector, 'checkpoint': True},
     'scribble_pidinet': {'class': PidiNetDetector, 'checkpoint': True},
     'softedge_pidinet': {'class': PidiNetDetector, 'checkpoint': True},
     'scribble_pidsafe': {'class': PidiNetDetector, 'checkpoint': True},
@@ -58,10 +59,11 @@ MODEL_PARAMS = {
     'softedge_hedsafe': {'resize': False, 'scribble': False, 'safe': True},
     'depth_midas': {'resize': 512},
     'mlsd': {'resize': False},
-    'openpose': {'resize': False, 'hand_and_face': False},
-    'openpose_face': {'resize': False, 'hand_and_face': True},
-    'openpose_faceonly': {'resize': False, 'include_body': False, 'include_face': True},
-    'openpose_full': {'resize': False, 'hand_and_face': True},
+    'openpose': {'resize': False, 'include_body': True, 'include_hand': False, 'include_face': False},
+    'openpose_face': {'resize': False, 'include_body': True, 'include_hand': False, 'include_face': True},
+    'openpose_faceonly': {'resize': False, 'include_body': False, 'include_hand': False, 'include_face': True},
+    'openpose_full': {'resize': False, 'include_body': True, 'include_hand': True, 'include_face': True},
+    'openpose_hand': {'resize': False, 'include_body': False, 'include_hand': True, 'include_face': False},
     'scribble_pidinet': {'resize': False, 'safe': False, 'scribble': True},
     'softedge_pidinet': {'resize': False, 'safe': False, 'scribble': False},
     'scribble_pidsafe': {'resize': False, 'safe': True, 'scribble': True},
@@ -90,11 +92,15 @@ class Processor:
             params (Optional[Dict]): parameters for the processor
         """
         LOGGER.info("Loading %s".format(processor_id))
+
+        if processor_id not in MODELS:
+            raise ValueError(f"{processor_id} is not a valid processor id. Please make sure to choose one of {', '.join(MODELS.keys())}".)
+
         self.processor_id = processor_id
         self.processor = self.load_processor(self.processor_id)
 
         # load default params
-        self.params = MODEL_PARAMS[self.processor_id]
+        self.params = MODELS[self.processor_id]
         # update with user params
         if params:
             self.params.update(params)
@@ -112,9 +118,6 @@ class Processor:
         Returns:
             Processor: controlnet aux processor
         """
-        if processor_id not in MODELS:
-            raise ValueError(f"Processor {processor_id} not found. {CHOICES}")
-
         processor = MODELS[processor_id]['class']
 
         # check if the proecssor is a checkpoint model

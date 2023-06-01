@@ -13,6 +13,7 @@ from processor import MODELS
     'depth_midas',
     'mlsd',
     'openpose',
+    'openpose_hand',
     'openpose_face',
     'openpose_faceonly',
     'openpose_full',
