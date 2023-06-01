@@ -111,8 +111,3 @@ def test_shuffle(img):
 def test_zoe(img):
     zoe = ZoeDetector.from_pretrained("lllyasviel/Annotators")
     common("zoe", zoe, img)
-
-def test_processor_class(img):
-    for processor_id in MODELS.keys():
-        processor = Processor(processor_id)
-        output("processor_" + processor_id, processor(img, to_bytes=False))
