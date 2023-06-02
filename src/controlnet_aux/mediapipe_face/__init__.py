@@ -11,14 +11,22 @@ from .mediapipe_face_common import generate_annotation
 
 class MediapipeFaceDetector:
     def __call__(self,
-                 input_image: Union[np.ndarray, Image.Image],
+                 input_image: Union[np.ndarray, Image.Image] = None,
                  max_faces: int = 1,
                  min_confidence: float = 0.5,
                  return_pil: bool = None,
                  detect_resolution: int = 512,
                  image_resolution: int = 512,
-                 output_type: str = "pil"):
+                 output_type: str = "pil",
+                 **kwargs):
+
+        if "image" in kwargs:
+            warnings.warn("image is deprecated, please use `input_image=...` instead.", DeprecationWarning)
+            input_image = kwargs.pop("image")
         
+        if input_image is None:
+            raise ValueError("input_image must be defined.")
+
         if return_pil is not None:
             warnings.warn("return_pil is deprecated. Use output_type instead.", DeprecationWarning)
             output_type = "pil" if return_pil else "np"

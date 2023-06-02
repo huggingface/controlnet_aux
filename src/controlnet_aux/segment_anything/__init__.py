@@ -5,6 +5,8 @@
 # LICENSE file in the root directory of this source tree.
 
 import os
+import warnings
+from typing import Union
 
 import cv2
 import numpy as np
@@ -57,7 +59,14 @@ class SamDetector:
         
         return np.array(final_img, dtype=np.uint8)
 
-    def __call__(self, input_image: Image.Image, detect_resolution=512, image_resolution=512, output_type="pil") -> Image.Image:
+    def __call__(self, input_image: Union[np.ndarray, Image.Image]=None, detect_resolution=512, image_resolution=512, output_type="pil", **kwargs) -> Image.Image:
+        if "image" in kwargs:
+            warnings.warn("image is deprecated, please use `input_image=...` instead.", DeprecationWarning)
+            input_image = kwargs.pop("image")
+        
+        if input_image is None:
+            raise ValueError("input_image must be defined.")
+
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
         

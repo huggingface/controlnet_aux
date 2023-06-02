@@ -1,10 +1,18 @@
+import warnings
 import cv2
 import numpy as np
 from PIL import Image
 from ..util import HWC3, resize_image
 
 class CannyDetector:
-    def __call__(self, input_image, low_threshold=100, high_threshold=200, detect_resolution=512, image_resolution=512, output_type=None):
+    def __call__(self, input_image=None, low_threshold=100, high_threshold=200, detect_resolution=512, image_resolution=512, output_type=None, **kwargs):
+        if "img" in kwargs:
+            warnings.warn("img is deprecated, please use `input_image=...` instead.", DeprecationWarning)
+            input_image = kwargs.pop("img")
+        
+        if input_image is None:
+            raise ValueError("input_image must be defined.")
+
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
             output_type = output_type or "pil"
