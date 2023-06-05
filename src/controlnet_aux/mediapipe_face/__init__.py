@@ -14,22 +14,24 @@ class MediapipeFaceDetector:
                  input_image: Union[np.ndarray, Image.Image] = None,
                  max_faces: int = 1,
                  min_confidence: float = 0.5,
-                 return_pil: bool = None,
+                 output_type: str = "pil",
                  detect_resolution: int = 512,
                  image_resolution: int = 512,
-                 output_type: str = "pil",
                  **kwargs):
 
         if "image" in kwargs:
             warnings.warn("image is deprecated, please use `input_image=...` instead.", DeprecationWarning)
-            input_image = kwargs.pop("image")
-        
+            input_image = kwargs.pop("image")        
         if input_image is None:
             raise ValueError("input_image must be defined.")
 
-        if return_pil is not None:
+        if "return_pil" in kwargs:
             warnings.warn("return_pil is deprecated. Use output_type instead.", DeprecationWarning)
-            output_type = "pil" if return_pil else "np"
+            output_type = "pil" if kwargs["return_pil"] else "np"
+        if type(output_type) is bool:
+            warnings.warn("Passing `True` or `False` to `output_type` is deprecated and will raise an error in future versions")
+            if output_type:
+                output_type = "pil"
 
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)

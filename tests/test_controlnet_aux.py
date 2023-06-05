@@ -43,6 +43,7 @@ def img():
 def test_canny(img):
     canny = CannyDetector()
     common("canny", canny, img)
+    output("canny_img", canny(img=img))
 
 def test_hed(img):
     hed = HEDdetector.from_pretrained("lllyasviel/Annotators")
@@ -65,6 +66,7 @@ def test_lineart_anime(img):
 def test_mediapipe_face(img):
     mediapipe = MediapipeFaceDetector()
     common("mediapipe", mediapipe, img)
+    output("mediapipe_image", mediapipe(image=img))
 
 def test_midas(img):
     midas = MidasDetector.from_pretrained("lllyasviel/Annotators")
@@ -102,6 +104,7 @@ def test_pidi(img):
 def test_sam(img):
     sam = SamDetector.from_pretrained("ybelkada/segment-anything", subfolder="checkpoints")
     common("sam", sam, img)
+    output("sam_image", sam(image=img))
 
 def test_shuffle(img):
     shuffle = ContentShuffleDetector()

@@ -35,10 +35,14 @@ class PidiNetDetector:
         self.netNetwork.to(device)
         return self
     
-    def __call__(self, input_image, detect_resolution=512, image_resolution=512, safe=False, return_pil=None, scribble=False, apply_filter=False, output_type="pil"):
-        if return_pil is not None:
+    def __call__(self, input_image, detect_resolution=512, image_resolution=512, safe=False, output_type="pil", scribble=False, apply_filter=False, **kwargs):
+        if "return_pil" in kwargs:
             warnings.warn("return_pil is deprecated. Use output_type instead.", DeprecationWarning)
-            output_type = "pil" if return_pil else "np"
+            output_type = "pil" if kwargs["return_pil"] else "np"
+        if type(output_type) is bool:
+            warnings.warn("Passing `True` or `False` to `output_type` is deprecated and will raise an error in future versions")
+            if output_type:
+                output_type = "pil"
 
         device = next(iter(self.netNetwork.parameters())).device
         if not isinstance(input_image, np.ndarray):

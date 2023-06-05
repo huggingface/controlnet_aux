@@ -38,10 +38,14 @@ class MLSDdetector:
         self.model.to(device)
         return self
     
-    def __call__(self, input_image, thr_v=0.1, thr_d=0.1, detect_resolution=512, image_resolution=512, return_pil=None, output_type="pil"):
-        if return_pil is not None:
+    def __call__(self, input_image, thr_v=0.1, thr_d=0.1, detect_resolution=512, image_resolution=512, output_type="pil", **kwargs):
+        if "return_pil" in kwargs:
             warnings.warn("return_pil is deprecated. Use output_type instead.", DeprecationWarning)
-            output_type = "pil" if return_pil else "np"
+            output_type = "pil" if kwargs["return_pil"] else "np"
+        if type(output_type) is bool:
+            warnings.warn("Passing `True` or `False` to `output_type` is deprecated and will raise an error in future versions")
+            if output_type:
+                output_type = "pil"
 
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
