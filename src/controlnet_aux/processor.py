@@ -100,7 +100,7 @@ class Processor:
         self.processor = self.load_processor(self.processor_id)
 
         # load default params
-        self.params = MODELS[self.processor_id]
+        self.params = MODEL_PARAMS[self.processor_id]
         # update with user params
         if params:
             self.params.update(params)
