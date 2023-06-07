@@ -18,7 +18,9 @@ from controlnet_aux import (HEDdetector,
                             CannyDetector,
                             ContentShuffleDetector,
                             ZoeDetector,
-                            MediapipeFaceDetector)
+                            MediapipeFaceDetector,
+                            TilingDetector,
+                            )
 
 LOGGER = logging.getLogger(__name__)
 
@@ -44,11 +46,12 @@ MODELS = {
     'lineart_coarse': {'class': LineartDetector, 'checkpoint': True},
     'lineart_realistic': {'class': LineartDetector, 'checkpoint': True},
     'lineart_anime': {'class': LineartAnimeDetector, 'checkpoint': True},
-    'depth_zoe': {'class': ZoeDetector, 'checkpoint': True}, 
+    'depth_zoe': {'class': ZoeDetector, 'checkpoint': True},
     # instantiate
     'shuffle': {'class': ContentShuffleDetector, 'checkpoint': False},
     'mediapipe_face': {'class': MediapipeFaceDetector, 'checkpoint': False},
     'canny': {'class': CannyDetector, 'checkpoint': False},
+    'tiling': {'class': TilingDetector, 'checkpoint': False},
 }
 
 
@@ -76,6 +79,7 @@ MODEL_PARAMS = {
     'shuffle': {'resize': False},
     'depth_zoe': {'resize': False},
     'mediapipe_face': {'resize': False},
+    'tiling': {'resize': False},
 }
 
 CHOICES = f"Choices for the processor are {list(MODELS.keys())}"

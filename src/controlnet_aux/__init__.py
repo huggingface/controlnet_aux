@@ -14,3 +14,4 @@ from .canny import CannyDetector
 from .shuffle import ContentShuffleDetector
 from .mediapipe_face import MediapipeFaceDetector
 from .segment_anything import SamDetector
+from .tiling import TilingDetector
