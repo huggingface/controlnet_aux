@@ -1,6 +1,8 @@
 import os
 import types
+import warnings
 
+import cv2
 import numpy as np
 import torch
 import torchvision.transforms as transforms
@@ -58,7 +60,15 @@ class NormalBaeDetector:
         return self
 
 
-    def __call__(self, input_image, detect_resolution=512, image_resolution=512, return_pil=True):
+    def __call__(self, input_image, detect_resolution=512, image_resolution=512, output_type="pil", **kwargs):
+        if "return_pil" in kwargs:
+            warnings.warn("return_pil is deprecated. Use output_type instead.", DeprecationWarning)
+            output_type = "pil" if kwargs["return_pil"] else "np"
+        if type(output_type) is bool:
+            warnings.warn("Passing `True` or `False` to `output_type` is deprecated and will raise an error in future versions")
+            if output_type:
+                output_type = "pil"
+
         device = next(iter(self.model.parameters())).device
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
@@ -84,10 +94,16 @@ class NormalBaeDetector:
             normal = rearrange(normal[0], 'c h w -> h w c').cpu().numpy()
             normal_image = (normal * 255.0).clip(0, 255).astype(np.uint8)
 
-        img = resize_image(normal_image, image_resolution)
+        detected_map = normal_image
+        detected_map = HWC3(detected_map)      
 
-        if return_pil:
-            img = Image.fromarray(img)
+        img = resize_image(input_image, image_resolution)
+        H, W, C = img.shape
 
-        return img
+        detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)
+
+        if output_type == "pil":
+            detected_map = Image.fromarray(detected_map)
+
+        return detected_map
     

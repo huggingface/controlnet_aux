@@ -53,29 +53,29 @@ MODELS = {
 
 
 MODEL_PARAMS = {
-    'scribble_hed': {'resize': False, 'scribble': True},
-    'softedge_hed': {'resize': False, 'scribble': False},
-    'scribble_hedsafe': {'resize': False, 'scribble': True, 'safe': True},
-    'softedge_hedsafe': {'resize': False, 'scribble': False, 'safe': True},
-    'depth_midas': {'resize': 512},
-    'mlsd': {'resize': False},
-    'openpose': {'resize': False, 'include_body': True, 'include_hand': False, 'include_face': False},
-    'openpose_face': {'resize': False, 'include_body': True, 'include_hand': False, 'include_face': True},
-    'openpose_faceonly': {'resize': False, 'include_body': False, 'include_hand': False, 'include_face': True},
-    'openpose_full': {'resize': False, 'include_body': True, 'include_hand': True, 'include_face': True},
-    'openpose_hand': {'resize': False, 'include_body': False, 'include_hand': True, 'include_face': False},
-    'scribble_pidinet': {'resize': False, 'safe': False, 'scribble': True},
-    'softedge_pidinet': {'resize': False, 'safe': False, 'scribble': False},
-    'scribble_pidsafe': {'resize': False, 'safe': True, 'scribble': True},
-    'softedge_pidsafe': {'resize': False, 'safe': True, 'scribble': False},
-    'normal_bae': {'resize': False},
-    'lineart_realistic': {'resize': False, 'coarse': False},
-    'lineart_coarse': {'resize': False, 'coarse': True},
-    'lineart_anime': {'resize': False},
-    'canny': {'resize': False},
-    'shuffle': {'resize': False},
-    'depth_zoe': {'resize': False},
-    'mediapipe_face': {'resize': False},
+    'scribble_hed': {'scribble': True},
+    'softedge_hed': {'scribble': False},
+    'scribble_hedsafe': {'scribble': True, 'safe': True},
+    'softedge_hedsafe': {'scribble': False, 'safe': True},
+    'depth_midas': {},
+    'mlsd': {},
+    'openpose': {'include_body': True, 'include_hand': False, 'include_face': False},
+    'openpose_face': {'include_body': True, 'include_hand': False, 'include_face': True},
+    'openpose_faceonly': {'include_body': False, 'include_hand': False, 'include_face': True},
+    'openpose_full': {'include_body': True, 'include_hand': True, 'include_face': True},
+    'openpose_hand': {'include_body': False, 'include_hand': True, 'include_face': False},
+    'scribble_pidinet': {'safe': False, 'scribble': True},
+    'softedge_pidinet': {'safe': False, 'scribble': False},
+    'scribble_pidsafe': {'safe': True, 'scribble': True},
+    'softedge_pidsafe': {'safe': True, 'scribble': False},
+    'normal_bae': {},
+    'lineart_realistic': {'coarse': False},
+    'lineart_coarse': {'coarse': True},
+    'lineart_anime': {},
+    'canny': {},
+    'shuffle': {},
+    'depth_zoe': {},
+    'mediapipe_face': {},
 }
 
 CHOICES = f"Choices for the processor are {list(MODELS.keys())}"
@@ -104,10 +104,6 @@ class Processor:
         # update with user params
         if params:
             self.params.update(params)
-
-        self.resize = self.params.pop('resize', False)
-        if self.resize:
-            LOGGER.warning(f"Warning: {self.processor_id} will resize image to {self.resize}x{self.resize}")
 
     def load_processor(self, processor_id: str) -> 'Processor':
         """Load controlnet aux processors
@@ -141,9 +137,6 @@ class Processor:
         # check if bytes or PIL Image
         if isinstance(image, bytes):
             image = Image.open(io.BytesIO(image)).convert("RGB")
-
-        if self.resize:
-            image = image.resize((self.resize, self.resize))
 
         processed_image = self.processor(image, **self.params)
 

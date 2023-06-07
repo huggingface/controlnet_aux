@@ -6,6 +6,7 @@
 # and in this way it works better for gradio's RGB protocol
 
 import os
+import warnings
 
 import cv2
 import numpy as np
@@ -78,7 +79,15 @@ class HEDdetector:
         self.netNetwork.to(device)
         return self
     
-    def __call__(self, input_image, detect_resolution=512, image_resolution=512, safe=False, return_pil=True, scribble=False):
+    def __call__(self, input_image, detect_resolution=512, image_resolution=512, safe=False, output_type="pil", scribble=False, **kwargs):
+        if "return_pil" in kwargs:
+            warnings.warn("return_pil is deprecated. Use output_type instead.", DeprecationWarning)
+            output_type = "pil" if kwargs["return_pil"] else "np"
+        if type(output_type) is bool:
+            warnings.warn("Passing `True` or `False` to `output_type` is deprecated and will raise an error in future versions")
+            if output_type:
+                output_type = "pil"
+
         device = next(iter(self.netNetwork.parameters())).device
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
@@ -101,7 +110,6 @@ class HEDdetector:
             edge = (edge * 255.0).clip(0, 255).astype(np.uint8)
 
         detected_map = edge
-
         detected_map = HWC3(detected_map)
 
         img = resize_image(input_image, image_resolution)
@@ -115,7 +123,7 @@ class HEDdetector:
             detected_map[detected_map > 4] = 255
             detected_map[detected_map < 255] = 0
 
-        if return_pil:
+        if output_type == "pil":
             detected_map = Image.fromarray(detected_map)
 
         return detected_map

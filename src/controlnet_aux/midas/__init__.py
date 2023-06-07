@@ -7,7 +7,7 @@ from einops import rearrange
 from huggingface_hub import hf_hub_download
 from PIL import Image
 
-from ..util import HWC3
+from ..util import HWC3, resize_image
 from .api import MiDaSInference
 
 
@@ -36,14 +36,17 @@ class MidasDetector:
         self.model.to(device)
         return self
     
-    def __call__(self, input_image, a=np.pi * 2.0, bg_th=0.1, depth_and_normal=False):
+    def __call__(self, input_image, a=np.pi * 2.0, bg_th=0.1, depth_and_normal=False, detect_resolution=512, image_resolution=512, output_type=None):
         device = next(iter(self.model.parameters())).device
-        input_type = "np"
-        if isinstance(input_image, Image.Image):
-            input_image = np.array(input_image)
-            input_type = "pil"
-
+        if not isinstance(input_image, np.ndarray):
+            input_image = np.array(input_image, dtype=np.uint8)
+            output_type = output_type or "pil"
+        else:
+            output_type = output_type or "np"
+        
         input_image = HWC3(input_image)
+        input_image = resize_image(input_image, detect_resolution)
+
         assert input_image.ndim == 3
         image_depth = input_image
         with torch.no_grad():
@@ -70,9 +73,19 @@ class MidasDetector:
                 normal /= np.sum(normal ** 2.0, axis=2, keepdims=True) ** 0.5
                 normal_image = (normal * 127.5 + 127.5).clip(0, 255).astype(np.uint8)[:, :, ::-1]
         
-        if input_type == "pil":
+        depth_image = HWC3(depth_image)
+        if depth_and_normal:
+            normal_image = HWC3(normal_image)
+
+        img = resize_image(input_image, image_resolution)
+        H, W, C = img.shape
+
+        depth_image = cv2.resize(depth_image, (W, H), interpolation=cv2.INTER_LINEAR)
+        if depth_and_normal:
+            normal_image = cv2.resize(normal_image, (W, H), interpolation=cv2.INTER_LINEAR)
+        
+        if output_type == "pil":
             depth_image = Image.fromarray(depth_image)
-            depth_image = depth_image.convert("RGB")
             if depth_and_normal:
                 normal_image = Image.fromarray(normal_image)
         
