@@ -1,18 +1,18 @@
-import shutil
 import os
+import shutil
 from io import BytesIO
 
+import numpy as np
 import pytest
 import requests
-import numpy as np
 from PIL import Image
 
 from controlnet_aux import (CannyDetector, ContentShuffleDetector, HEDdetector,
-                            LineartAnimeDetector, LineartDetector,
-                            MediapipeFaceDetector, MidasDetector, MLSDdetector,
-                            NormalBaeDetector, OpenposeDetector,
-                            PidiNetDetector, SamDetector, ZoeDetector)
-from controlnet_aux.processor import Processor, MODELS
+                            LeresDetector, LineartAnimeDetector,
+                            LineartDetector, MediapipeFaceDetector,
+                            MidasDetector, MLSDdetector, NormalBaeDetector,
+                            OpenposeDetector, PidiNetDetector, SamDetector,
+                            ZoeDetector)
 
 OUTPUT_DIR = "tests/outputs"
 
@@ -51,6 +51,11 @@ def test_hed(img):
     return_pil("hed", hed, img)
     output("hed_safe", hed(img, safe=True))
     output("hed_scribble", hed(img, scribble=True))
+
+def test_leres(img):
+    leres = LeresDetector.from_pretrained("lllyasviel/Annotators")
+    common("leres", leres, img)
+    output("leres_boost", leres(img, boost=True))
 
 def test_lineart(img):
     lineart = LineartDetector.from_pretrained("lllyasviel/Annotators")
