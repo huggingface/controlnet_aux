@@ -1,9 +1,11 @@
 import io
+
+import numpy as np
 import pytest
 from PIL import Image
 
-from processor import Processor
-from processor import MODELS
+from controlnet_aux.processor import MODELS, Processor
+
 
 @pytest.fixture(params=[
     'scribble_hed',
@@ -26,8 +28,10 @@ from processor import MODELS
     'lineart_realistic',
     'lineart_anime',
     'canny',
-    'content_shuffle',
-    'zoe',
+    'shuffle',
+    'depth_zoe',
+    'depth_leres',
+    'depth_leres++',
     'mediapipe_face'
 ])
 def processor(request):
@@ -45,10 +49,21 @@ def test_processor_call(processor):
         image_bytes = f.read()
     image = Image.open(io.BytesIO(image_bytes))
 
+    # Output size
+    resolution = 512
+    W, H = image.size
+    H = float(H)
+    W = float(W)
+    k = float(resolution) / min(H, W)
+    H *= k
+    W *= k
+    H = int(np.round(H / 64.0)) * 64
+    W = int(np.round(W / 64.0)) * 64
+
     # Test processing
     processed_image = processor(image)
     assert isinstance(processed_image, Image.Image)
-    assert processed_image.size == image.size
+    assert processed_image.size == (W, H)
 
 
 def test_processor_call_bytes(processor):

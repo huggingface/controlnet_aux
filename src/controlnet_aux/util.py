@@ -3,6 +3,7 @@ import random
 
 import cv2
 import numpy as np
+import torch
 
 annotator_ckpts_path = os.path.join(os.path.dirname(__file__), 'ckpts')
 
@@ -94,6 +95,12 @@ def resize_image(input_image, resolution):
     W = int(np.round(W / 64.0)) * 64
     img = cv2.resize(input_image, (W, H), interpolation=cv2.INTER_LANCZOS4 if k > 1 else cv2.INTER_AREA)
     return img
+
+
+def torch_gc():
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        torch.cuda.ipc_collect()
 
 
 def ade_palette():
