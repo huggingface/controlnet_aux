@@ -39,7 +39,7 @@ img = Image.open(BytesIO(response.content)).convert("RGB").resize((512, 512))
 processor_id = 'scribble_hed'
 processor = Processor(processor_id)
 
-processed_image = processor(image, to_pil=True)
+processed_image = processor(img, to_pil=True)
 ```
 
 Each model can be loaded individually by importing and instantiating them as follows
