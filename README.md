@@ -19,6 +19,7 @@ You can use the processor class, which can load each of the auxiliary models wit
 ```python
 import requests
 from PIL import Image
+from io import BytesIO
 
 from controlnet_aux.processor import Processor
 
