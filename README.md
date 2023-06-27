@@ -9,7 +9,7 @@ All credit & copyright goes to https://github.com/lllyasviel .
 ## Install
 
 ```
-pip install controlnet-aux==0.0.5
+pip install controlnet-aux==0.0.6
 ```
 
 ## Usage
