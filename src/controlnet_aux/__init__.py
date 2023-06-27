@@ -1,4 +1,4 @@
-__version__ = "0.0.5"
+__version__ = "0.0.6"
 
 from .hed import HEDdetector
 from .leres import LeresDetector
