@@ -75,7 +75,7 @@ class OpenposeDetector:
 
         return cls(body_estimation, hand_estimation, face_estimation)
 
-    def __call__(self, input_image, detect_resolution=512, image_resolution=512, hand_and_face=False, return_pil=True):
+    def __call__(self, input_image, detect_resolution=512, image_resolution=512, hand=False, face=False, return_pil=True):
         # hand = False
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
@@ -88,7 +88,7 @@ class OpenposeDetector:
             candidate, subset = self.body_estimation(input_image)
             hands = []
             faces = []
-            if hand_and_face:
+            if hand:
                 # Hand
                 hands_list = handDetect(candidate, subset, input_image)
                 for x, y, w, is_left in hands_list:
@@ -97,7 +97,7 @@ class OpenposeDetector:
                         peaks[:, 0] = np.where(peaks[:, 0] < 1e-6, -1, peaks[:, 0] + x) / float(W)
                         peaks[:, 1] = np.where(peaks[:, 1] < 1e-6, -1, peaks[:, 1] + y) / float(H)
                         hands.append(peaks.tolist())
-                # Face
+            if face:
                 faces_list = faceDetect(candidate, subset, input_image)
                 for x, y, w in faces_list:
                     heatmaps = self.face_estimation(input_image[y:y+w, x:x+w, :])
