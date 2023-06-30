@@ -26,7 +26,7 @@ class SamDetector:
     @classmethod
     def from_pretrained(cls, pretrained_model_or_path, model_type="vit_h", filename="sam_vit_h_4b8939.pth", subfolder=None, cache_dir=None):
         """
-        Possible model_type : vit_h, vit_l, vit_b
+        Possible model_type : vit_h, vit_l, vit_b, vit_t
         download weights from https://github.com/facebookresearch/segment-anything
         """
         if os.path.isdir(pretrained_model_or_path):
