@@ -66,6 +66,7 @@ lineart = LineartDetector.from_pretrained("lllyasviel/Annotators")
 lineart_anime = LineartAnimeDetector.from_pretrained("lllyasviel/Annotators")
 zoe = ZoeDetector.from_pretrained("lllyasviel/Annotators")
 sam = SamDetector.from_pretrained("ybelkada/segment-anything", subfolder="checkpoints")
+mobile_sam = SamDetector.from_pretrained("dhkim2810/MobileSAM", model_type="vit_t", filename="mobile_sam.pt")
 leres = LeresDetector.from_pretrained("lllyasviel/Annotators")
 
 # instantiate
