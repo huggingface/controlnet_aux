@@ -35,7 +35,7 @@ img = Image.open(BytesIO(response.content)).convert("RGB").resize((512, 512))
 #  "lineart_coarse", "lineart_realistic", "mediapipe_face", "mlsd", "normal_bae", "normal_midas",
 #  "openpose", "openpose_face", "openpose_faceonly", "openpose_full", "openpose_hand",
 #  "scribble_hed, "scribble_pidinet", "shuffle", "softedge_hed", "softedge_hedsafe",
-#  "softedge_pidinet", "softedge_pidsafe", "dwpose"]
+#  "softedge_pidinet", "softedge_pidsafe"]
 processor_id = 'scribble_hed'
 processor = Processor(processor_id)
 

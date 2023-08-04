@@ -11,7 +11,7 @@ from controlnet_aux import (CannyDetector, ContentShuffleDetector, HEDdetector,
                             LeresDetector, LineartAnimeDetector,
                             LineartDetector, MediapipeFaceDetector,
                             MidasDetector, MLSDdetector, NormalBaeDetector,
-                            OpenposeDetector, PidiNetDetector, ZoeDetector)
+                            OpenposeDetector, PidiNetDetector, ZoeDetector,)
 
 LOGGER = logging.getLogger(__name__)
 

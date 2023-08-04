@@ -15,3 +15,4 @@ from .canny import CannyDetector
 from .mediapipe_face import MediapipeFaceDetector
 from .segment_anything import SamDetector
 from .shuffle import ContentShuffleDetector
+from .dwpose import DWposeDetector
