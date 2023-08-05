@@ -82,6 +82,6 @@ class DWposeDetector:
             detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)
 
             if output_type == "pil":
-                detected_map = Image.fromarray(cv2.cvtColor(detected_map, cv2.COLOR_BGR2RGB))
+                detected_map = Image.fromarray(detected_map)
                 
             return detected_map
