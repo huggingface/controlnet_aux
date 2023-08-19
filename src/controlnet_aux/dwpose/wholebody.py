@@ -6,13 +6,32 @@ import cv2
 import mmcv
 import torch
 import matplotlib.pyplot as plt
-from mmpose.apis import inference_topdown
-from mmpose.apis import init_model as init_pose_estimator
-from mmpose.evaluation.functional import nms
-from mmpose.utils import adapt_mmdet_pipeline
-from mmpose.structures import merge_data_samples
+import warnings
 
-from mmdet.apis import inference_detector, init_detector
+try:
+    import mmcv
+except ImportError:
+    warnings.warn(
+        "The module 'mmcv' is not installed. The package will have limited functionality. Please install it using the command: mim install 'mmcv>=2.0.1'"
+    )
+
+try:
+    from mmpose.apis import inference_topdown
+    from mmpose.apis import init_model as init_pose_estimator
+    from mmpose.evaluation.functional import nms
+    from mmpose.utils import adapt_mmdet_pipeline
+    from mmpose.structures import merge_data_samples
+except ImportError:
+    warnings.warn(
+        "The module 'mmpose' is not installed. The package will have limited functionality. Please install it using the command: mim install 'mmpose>=1.1.0'"
+    )
+        
+try:
+    from mmdet.apis import inference_detector, init_detector
+except ImportError:
+    warnings.warn(
+        "The module 'mmdet' is not installed. The package will have limited functionality. Please install it using the command: mim install 'mmdet>=3.1.0'"
+    )
 
 
 class Wholebody:
@@ -22,10 +41,10 @@ class Wholebody:
                  device="cpu"):
         
         if det_config is None:
-            det_config = os.path.join(os.path.dirname(__file__), "dwpose_config/dwpose-l_384x288.py")
+            det_config = os.path.join(os.path.dirname(__file__), "yolox_config/yolox_l_8xb8-300e_coco.py")
         
         if pose_config is None:
-            pose_config = os.path.join(os.path.dirname(__file__), "yolox_config/yolox_l_8xb8-300e_coco.py")
+            pose_config = os.path.join(os.path.dirname(__file__), "dwpose_config/dwpose-l_384x288.py")
 
         if det_ckpt is None:
             det_ckpt = 'https://download.openmmlab.com/mmdetection/v2.0/yolox/yolox_l_8x8_300e_coco/yolox_l_8x8_300e_coco_20211126_140236-d3bd2b23.pth'
@@ -42,7 +61,12 @@ class Wholebody:
             pose_config,
             pose_ckpt,
             device=device)
-
+    
+    def to(self, device):
+        self.detector.to(device)
+        self.pose_estimator.to(device)
+        return self
+    
     def __call__(self, oriImg):
         # predict bbox
         det_result = inference_detector(self.detector, oriImg)

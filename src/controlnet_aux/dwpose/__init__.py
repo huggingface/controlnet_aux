@@ -35,7 +35,11 @@ class DWposeDetector:
     def __init__(self, det_config=None, det_ckpt=None, pose_config=None, pose_ckpt=None, device="cpu"):
 
         self.pose_estimation = Wholebody(det_config, det_ckpt, pose_config, pose_ckpt, device)
-
+    
+    def to(self, device):
+        self.pose_estimation.to(device)
+        return self
+    
     def __call__(self, input_image, detect_resolution=512, image_resolution=512, output_type="pil", **kwargs):
         
         input_image = cv2.cvtColor(np.array(input_image, dtype=np.uint8), cv2.COLOR_RGB2BGR)
