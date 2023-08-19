@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import os
 import numpy as np
 from . import util
 import cv2
@@ -19,7 +20,13 @@ class Wholebody:
                  det_config=None, det_ckpt=None, 
                  pose_config=None, pose_ckpt=None,
                  device="cpu"):
-                
+        
+        if det_config is None:
+            det_config = os.path.join(os.path.dirname(__file__), "dwpose_config/dwpose-l_384x288.py")
+        
+        if pose_config is None:
+            pose_config = os.path.join(os.path.dirname(__file__), "yolox_config/yolox_l_8xb8-300e_coco.py")
+
         if det_ckpt is None:
             det_ckpt = 'https://download.openmmlab.com/mmdetection/v2.0/yolox/yolox_l_8x8_300e_coco/yolox_l_8x8_300e_coco_20211126_140236-d3bd2b23.pth'
         

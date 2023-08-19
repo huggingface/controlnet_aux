@@ -120,8 +120,7 @@ def test_zoe(img):
     zoe = ZoeDetector.from_pretrained("lllyasviel/Annotators")
     common("zoe", zoe, img)
 
-def test_dwpose(img, det_config, det_ckpt, pose_config, pose_ckpt):
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    dwpose = DWposeDetector(det_config, det_ckpt, pose_config, pose_ckpt, device)
+def test_dwpose(img):
+    dwpose = DWposeDetector()
     common("dwpose", dwpose, img)
     return_pil("dwpose", dwpose, img)

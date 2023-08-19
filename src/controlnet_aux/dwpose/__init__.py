@@ -12,6 +12,7 @@ import torch
 import numpy as np
 from PIL import Image
 
+from ..util import HWC3, resize_image
 from . import util
 from .wholebody import Wholebody
 
@@ -31,17 +32,16 @@ def draw_pose(pose, H, W):
     return canvas
 
 class DWposeDetector:
-    def __init__(self, det_config, det_ckpt, pose_config, pose_ckpt, device):
+    def __init__(self, det_config=None, det_ckpt=None, pose_config=None, pose_ckpt=None, device="cpu"):
 
         self.pose_estimation = Wholebody(det_config, det_ckpt, pose_config, pose_ckpt, device)
 
-    def __call__(self, oriImg, output_type="pil", detect_resolution=512, image_resolution=512):
+    def __call__(self, input_image, detect_resolution=512, image_resolution=512, output_type="pil", **kwargs):
         
-        oriImg = oriImg.copy()
-        input_image = cv2.cvtColor(np.array(oriImg), cv2.COLOR_RGB2BGR)
+        input_image = cv2.cvtColor(np.array(input_image, dtype=np.uint8), cv2.COLOR_RGB2BGR)
 
-        input_image = util.HWC3(input_image)
-        input_image = util.resize_image(input_image, detect_resolution)
+        input_image = HWC3(input_image)
+        input_image = resize_image(input_image, detect_resolution)
         H, W, C = input_image.shape
         
         with torch.no_grad():
@@ -74,9 +74,9 @@ class DWposeDetector:
             pose = dict(bodies=bodies, hands=hands, faces=faces)
             
             detected_map = draw_pose(pose, H, W)
-            detected_map = util.HWC3(detected_map)
+            detected_map = HWC3(detected_map)
             
-            img = util.resize_image(input_image, image_resolution)
+            img = resize_image(input_image, image_resolution)
             H, W, C = img.shape
 
             detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)
