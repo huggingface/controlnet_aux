@@ -11,7 +11,8 @@ from controlnet_aux import (CannyDetector, ContentShuffleDetector, HEDdetector,
                             LeresDetector, LineartAnimeDetector,
                             LineartDetector, MediapipeFaceDetector,
                             MidasDetector, MLSDdetector, NormalBaeDetector,
-                            OpenposeDetector, PidiNetDetector, ZoeDetector,)
+                            OpenposeDetector, PidiNetDetector, ZoeDetector,
+                            DWposeDetector)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,6 +30,7 @@ MODELS = {
     'openpose_faceonly': {'class': OpenposeDetector, 'checkpoint': True},
     'openpose_full': {'class': OpenposeDetector, 'checkpoint': True},
     'openpose_hand': {'class': OpenposeDetector, 'checkpoint': True},
+    'dwpose': {'class': DWposeDetector, 'checkpoint': True},
     'scribble_pidinet': {'class': PidiNetDetector, 'checkpoint': True},
     'softedge_pidinet': {'class': PidiNetDetector, 'checkpoint': True},
     'scribble_pidsafe': {'class': PidiNetDetector, 'checkpoint': True},
@@ -59,6 +61,7 @@ MODEL_PARAMS = {
     'openpose_faceonly': {'include_body': False, 'include_hand': False, 'include_face': True},
     'openpose_full': {'include_body': True, 'include_hand': True, 'include_face': True},
     'openpose_hand': {'include_body': False, 'include_hand': True, 'include_face': False},
+    'dwpose': {},
     'scribble_pidinet': {'safe': False, 'scribble': True},
     'softedge_pidinet': {'safe': False, 'scribble': False},
     'scribble_pidsafe': {'safe': True, 'scribble': True},
