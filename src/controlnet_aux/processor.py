@@ -91,7 +91,7 @@ class Processor:
                                 canny, content_shuffle, zoe, mediapipe_face
             params (Optional[Dict]): parameters for the processor
         """
-        LOGGER.info("Loading %s".format(processor_id))
+        LOGGER.info(f"Loading {processor_id}")
 
         if processor_id not in MODELS:
             raise ValueError(f"{processor_id} is not a valid processor id. Please make sure to choose one of {', '.join(MODELS.keys())}")
