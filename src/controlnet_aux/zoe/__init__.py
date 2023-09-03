@@ -38,7 +38,7 @@ class ZoeDetector:
         self.model.to(device)
         return self
     
-    def __call__(self, input_image, detect_resolution=512, image_resolution=512, output_type=None):
+    def __call__(self, input_image, detect_resolution=512, image_resolution=512, output_type=None, gamma_corrected=False):
         device = next(iter(self.model.parameters())).device
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
@@ -65,6 +65,9 @@ class ZoeDetector:
             depth -= vmin
             depth /= vmax - vmin
             depth = 1.0 - depth
+
+            if gamma_corrected:
+                depth = np.power(depth, 2.2)
             depth_image = (depth * 255.0).clip(0, 255).astype(np.uint8)
 
         detected_map = depth_image
