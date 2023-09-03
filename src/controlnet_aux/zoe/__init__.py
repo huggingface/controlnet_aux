@@ -9,6 +9,7 @@ from PIL import Image
 
 from ..util import HWC3, resize_image
 from .zoedepth.models.zoedepth.zoedepth_v1 import ZoeDepth
+from .zoedepth.models.zoedepth_nk.zoedepth_nk_v1 import ZoeDepthNK
 from .zoedepth.utils.config import get_config
 
 
@@ -17,7 +18,7 @@ class ZoeDetector:
         self.model = model
 
     @classmethod
-    def from_pretrained(cls, pretrained_model_or_path, filename=None, cache_dir=None):
+    def from_pretrained(cls, pretrained_model_or_path, model_type="zoe", filename=None, cache_dir=None):
         filename = filename or "ZoeD_M12_N.pt"
 
         if os.path.isdir(pretrained_model_or_path):
@@ -26,7 +27,8 @@ class ZoeDetector:
             model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
             
         conf = get_config("zoedepth", "infer")
-        model = ZoeDepth.build_from_config(conf)
+        model_cls = ZoeDepth if model_type == "zoe" else ZoeDepthNK
+        model = model_cls.build_from_config(conf)
         model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'))['model'])
         model.eval()
 
