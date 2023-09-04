@@ -9,6 +9,7 @@ from PIL import Image
 
 from ..util import HWC3, resize_image
 from .zoedepth.models.zoedepth.zoedepth_v1 import ZoeDepth
+from .zoedepth.models.zoedepth_nk.zoedepth_nk_v1 import ZoeDepthNK
 from .zoedepth.utils.config import get_config
 
 
@@ -17,7 +18,7 @@ class ZoeDetector:
         self.model = model
 
     @classmethod
-    def from_pretrained(cls, pretrained_model_or_path, filename=None, cache_dir=None):
+    def from_pretrained(cls, pretrained_model_or_path, model_type="zoedepth", filename=None, cache_dir=None):
         filename = filename or "ZoeD_M12_N.pt"
 
         if os.path.isdir(pretrained_model_or_path):
@@ -25,8 +26,9 @@ class ZoeDetector:
         else:
             model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
             
-        conf = get_config("zoedepth", "infer")
-        model = ZoeDepth.build_from_config(conf)
+        conf = get_config(model_type, "infer")
+        model_cls = ZoeDepth if model_type == "zoedepth" else ZoeDepthNK
+        model = model_cls.build_from_config(conf)
         model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'))['model'])
         model.eval()
 
@@ -36,7 +38,7 @@ class ZoeDetector:
         self.model.to(device)
         return self
     
-    def __call__(self, input_image, detect_resolution=512, image_resolution=512, output_type=None):
+    def __call__(self, input_image, detect_resolution=512, image_resolution=512, output_type=None, gamma_corrected=False):
         device = next(iter(self.model.parameters())).device
         if not isinstance(input_image, np.ndarray):
             input_image = np.array(input_image, dtype=np.uint8)
@@ -63,6 +65,9 @@ class ZoeDetector:
             depth -= vmin
             depth /= vmax - vmin
             depth = 1.0 - depth
+
+            if gamma_corrected:
+                depth = np.power(depth, 2.2)
             depth_image = (depth * 255.0).clip(0, 255).astype(np.uint8)
 
         detected_map = depth_image
