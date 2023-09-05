@@ -2,7 +2,6 @@ import math
 from typing import List, NamedTuple, Union
 
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from scipy.ndimage.filters import gaussian_filter
@@ -259,19 +258,3 @@ class Body(object):
             )
             for person in subset
         ]
-    
-
-if __name__ == "__main__":
-    body_estimation = Body('../model/body_pose_model.pth')
-
-    test_image = '../images/ski.jpg'
-    oriImg = cv2.imread(test_image)  # B,G,R order
-    candidate, subset = body_estimation(oriImg)
-    bodies = body_estimation.format_body_result(candidate, subset)
-
-    canvas = oriImg
-    for body in bodies:
-        canvas = util.draw_bodypose(canvas, body)
-        
-    plt.imshow(canvas[:, :, [2, 1, 0]])
-    plt.show()

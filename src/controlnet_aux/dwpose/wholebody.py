@@ -1,11 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
 import numpy as np
-from . import util
-import cv2
-import mmcv
-import torch
-import matplotlib.pyplot as plt
 import warnings
 
 try:

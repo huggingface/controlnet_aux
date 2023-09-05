@@ -1,6 +1,5 @@
 import math
 import numpy as np
-import matplotlib
 import cv2
 from typing import List, Tuple, Union
 
@@ -125,6 +124,7 @@ def draw_bodypose(canvas: np.ndarray, keypoints: List[Keypoint]) -> np.ndarray:
 
 
 def draw_handpose(canvas: np.ndarray, keypoints: Union[List[Keypoint], None]) -> np.ndarray:
+    import matplotlib
     """
     Draw keypoints and connections representing hand pose on a given canvas.
 

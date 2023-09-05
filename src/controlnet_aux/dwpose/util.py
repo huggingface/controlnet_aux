@@ -1,6 +1,5 @@
 import math
 import numpy as np
-import matplotlib
 import cv2
 
 
@@ -110,6 +109,7 @@ def draw_bodypose(canvas, candidate, subset):
 
 
 def draw_handpose(canvas, all_hand_peaks):
+    import matplotlib
     
     H, W, C = canvas.shape
 

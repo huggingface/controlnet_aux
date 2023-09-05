@@ -83,7 +83,6 @@ _deps = [
     "filelock",
     "importlib_metadata",
     "opencv-python",
-    "matplotlib",
     "scipy",
     "huggingface_hub",
     "einops",
