@@ -93,7 +93,8 @@ class HEDdetector:
             input_image = np.array(input_image, dtype=np.uint8)
 
         input_image = HWC3(input_image)
-        input_image = resize_image(input_image, detect_resolution)
+        if detect_resolution is not None:
+            input_image = resize_image(input_image, detect_resolution)
 
         assert input_image.ndim == 3
         H, W, C = input_image.shape
@@ -112,7 +113,7 @@ class HEDdetector:
         detected_map = edge
         detected_map = HWC3(detected_map)
 
-        img = resize_image(input_image, image_resolution)
+        img = resize_image(input_image, image_resolution) if image_resolution is not None else input_image
         H, W, C = img.shape
 
         detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)
