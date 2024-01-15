@@ -110,3 +110,7 @@ processed_image_content = content(img)
 processed_image_mediapipe_face = face_detector(img)
 processed_image_dwpose = dwpose(img)
 ```
+
+### Image resolution
+
+In order to maintain the image aspect ratio, `detect_resolution`, `image_resolution` and images sizes need to be using multiple of `64`.
