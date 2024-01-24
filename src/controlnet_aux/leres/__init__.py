@@ -20,14 +20,14 @@ class LeresDetector:
         self.pix2pixmodel = pix2pixmodel
 
     @classmethod
-    def from_pretrained(cls, pretrained_model_or_path, filename=None, pix2pix_filename=None, cache_dir=None):
+    def from_pretrained(cls, pretrained_model_or_path, filename=None, pix2pix_filename=None, cache_dir=None, local_files_only=False):
         filename = filename or "res101.pth"
         pix2pix_filename = pix2pix_filename or "latest_net_G.pth"
 
         if os.path.isdir(pretrained_model_or_path):
             model_path = os.path.join(pretrained_model_or_path, filename)
         else:
-            model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir)
+            model_path = hf_hub_download(pretrained_model_or_path, filename, cache_dir=cache_dir, local_files_only=local_files_only)
             
         checkpoint = torch.load(model_path, map_location=torch.device('cpu'))
 
@@ -38,7 +38,7 @@ class LeresDetector:
         if os.path.isdir(pretrained_model_or_path):
             model_path = os.path.join(pretrained_model_or_path, pix2pix_filename)
         else:
-            model_path = hf_hub_download(pretrained_model_or_path, pix2pix_filename, cache_dir=cache_dir)
+            model_path = hf_hub_download(pretrained_model_or_path, pix2pix_filename, cache_dir=cache_dir, local_files_only=local_files_only)
 
         opt = TestOptions().parse()
         if not torch.cuda.is_available():
