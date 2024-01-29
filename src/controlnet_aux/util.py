@@ -91,8 +91,10 @@ def resize_image(input_image, resolution):
     k = float(resolution) / min(H, W)
     H *= k
     W *= k
-    H = int(np.round(H / 64.0)) * 64
-    W = int(np.round(W / 64.0)) * 64
+    # We ensure image size is multiple of 32. If not this leads to RuntimeError:
+    # The size of tensor a (X) must match the size of tensor b (Y) at non-singleton dimension Z
+    H = int(np.round(H / 32.0)) * 32
+    W = int(np.round(W / 32.0)) * 32
     img = cv2.resize(input_image, (W, H), interpolation=cv2.INTER_LANCZOS4 if k > 1 else cv2.INTER_AREA)
     return img
 

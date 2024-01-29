@@ -21,7 +21,8 @@ class ContentShuffleDetector:
             input_image = np.array(input_image, dtype=np.uint8)
 
         input_image = HWC3(input_image)
-        input_image = resize_image(input_image, detect_resolution)
+        if detect_resolution is not None:
+            input_image = resize_image(input_image, detect_resolution)
 
         H, W, C = input_image.shape
         if h is None:
@@ -35,7 +36,7 @@ class ContentShuffleDetector:
         flow = np.concatenate([x, y], axis=2).astype(np.float32)
         detected_map = cv2.remap(input_image, flow, None, cv2.INTER_LINEAR)
 
-        img = resize_image(input_image, image_resolution)
+        img = resize_image(input_image, image_resolution) if image_resolution is not None else input_image
         H, W, C = img.shape
 
         detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)
