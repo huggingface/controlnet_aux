@@ -26,7 +26,7 @@ import torch
 import torch.nn as nn
 
 
-@torch.jit.script
+@torch.jit.trace
 def exp_attractor(dx, alpha: float = 300, gamma: int = 2):
     """Exponential attractor: dc = exp(-alpha*|dx|^gamma) * dx , where dx = a - c, a = attractor point, c = bin center, dc = shift in bin centermmary for exp_attractor
 
@@ -41,7 +41,7 @@ def exp_attractor(dx, alpha: float = 300, gamma: int = 2):
     return torch.exp(-alpha*(torch.abs(dx)**gamma)) * (dx)
 
 
-@torch.jit.script
+@torch.jit.trace
 def inv_attractor(dx, alpha: float = 300, gamma: int = 2):
     """Inverse attractor: dc = dx / (1 + alpha*dx^gamma), where dx = a - c, a = attractor point, c = bin center, dc = shift in bin center
     This is the default one according to the accompanying paper. 
