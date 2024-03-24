@@ -105,11 +105,12 @@ class Processor:
         if params:
             self.params.update(params)
 
-    def load_processor(self, processor_id: str) -> 'Processor':
+    def load_processor(self, processor_id: str, local_files_only: bool = False) -> 'Processor':
         """Load controlnet aux processors
 
         Args:
             processor_id (str): processor name
+            local_files_only (bool): whether to load only local files
 
         Returns:
             Processor: controlnet aux processor
@@ -118,7 +119,7 @@ class Processor:
 
         # check if the proecssor is a checkpoint model
         if MODELS[processor_id]['checkpoint']:
-            processor = processor.from_pretrained("lllyasviel/Annotators")
+            processor = processor.from_pretrained("lllyasviel/Annotators", local_files_only=local_files_only)
         else:
             processor = processor()
         return processor
