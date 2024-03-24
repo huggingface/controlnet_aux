@@ -82,7 +82,7 @@ CHOICES = f"Choices for the processor are {list(MODELS.keys())}"
 
 
 class Processor:
-    def __init__(self, processor_id: str, params: Optional[Dict] = None) -> None:
+    def __init__(self, processor_id: str, params: Optional[Dict] = None, local_files_only: bool = False) -> None:
         """Processor that can be used to process images with controlnet aux processors
 
         Args:
@@ -90,6 +90,7 @@ class Processor:
                                 pidinet, normalbae, lineart, lineart_coarse, lineart_anime,
                                 canny, content_shuffle, zoe, mediapipe_face
             params (Optional[Dict]): parameters for the processor
+            local_files_only (bool): whether to load only local files
         """
         LOGGER.info(f"Loading {processor_id}")
 
@@ -97,7 +98,7 @@ class Processor:
             raise ValueError(f"{processor_id} is not a valid processor id. Please make sure to choose one of {', '.join(MODELS.keys())}")
 
         self.processor_id = processor_id
-        self.processor = self.load_processor(self.processor_id)
+        self.processor = self.load_processor(self.processor_id, local_files_only=local_files_only)
 
         # load default params
         self.params = MODEL_PARAMS[self.processor_id]
