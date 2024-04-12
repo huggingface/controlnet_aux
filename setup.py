@@ -86,9 +86,9 @@ _deps = [
     "scipy",
     "huggingface_hub",
     "einops",
-    "timm",
+    "timm<=0.6.7",
     "torchvision",
-    "scikit-image"
+    "scikit-image",
 ]
 
 # this is a lookup table with items like:
