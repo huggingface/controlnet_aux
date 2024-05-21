@@ -87,8 +87,6 @@ class AnylineDetector:
         lineart_result = self.get_intensity_mask(
             lineart_result, lower_bound=0, upper_bound=255
         )
-        test = Image.fromarray(lineart_result)
-        test.save("/home/ozzy/Desktop/tests/anyline/intensity_mask.png")
 
         cleaned = morphology.remove_small_objects(
             lineart_result.astype(bool), min_size=36, connectivity=1
