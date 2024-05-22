@@ -2,9 +2,9 @@
 
 This is a PyPi installable package of [lllyasviel's ControlNet Annotators](https://github.com/lllyasviel/ControlNet/tree/main/annotator)
 
-The code is copy-pasted from the respective folders in https://github.com/lllyasviel/ControlNet/tree/main/annotator and connected to [the 🤗 Hub](https://huggingface.co/lllyasviel/Annotators).
+The code is copy-pasted from the respective folders in <https://github.com/lllyasviel/ControlNet/tree/main/annotator> and connected to [the 🤗 Hub](https://huggingface.co/lllyasviel/Annotators).
 
-All credit & copyright goes to https://github.com/lllyasviel .
+All credit & copyright goes to <https://github.com/lllyasviel> .
 
 ## Install
 
@@ -13,6 +13,7 @@ pip install controlnet-aux==0.0.7
 ```
 
 To support DWPose which is dependent on MMDetection, MMCV and MMPose
+
 ```
 pip install -U openmim
 mim install mmengine
@@ -20,10 +21,11 @@ mim install "mmcv>=2.0.1"
 mim install "mmdet>=3.1.0"
 mim install "mmpose>=1.1.0"
 ```
+
 ## Usage
 
-
 You can use the processor class, which can load each of the auxiliary models with the following code
+
 ```python
 import requests
 from PIL import Image
@@ -51,6 +53,7 @@ processed_image = processor(img, to_pil=True)
 ```
 
 Each model can be loaded individually by importing and instantiating them as follows
+
 ```python
 from PIL import Image
 import requests
@@ -76,6 +79,10 @@ zoe = ZoeDetector.from_pretrained("lllyasviel/Annotators")
 sam = SamDetector.from_pretrained("ybelkada/segment-anything", subfolder="checkpoints")
 mobile_sam = SamDetector.from_pretrained("dhkim2810/MobileSAM", model_type="vit_t", filename="mobile_sam.pt")
 leres = LeresDetector.from_pretrained("lllyasviel/Annotators")
+teed = TEEDdetector.from_pretrained("fal-ai/teed", filename="5_model.pth")
+anyline = AnylineDetector.from_pretrained(
+    "TheMistoAI/MistoLine", filename="MTEED.pth", subfolder="Anyline"
+)
 
 # specify configs, ckpts and device, or it will be downloaded automatically and use cpu by default
 # det_config: ./src/controlnet_aux/dwpose/yolox_config/yolox_l_8xb8-300e_coco.py
@@ -90,6 +97,7 @@ dwpose = DWposeDetector(det_config=det_config, det_ckpt=det_ckpt, pose_config=po
 canny = CannyDetector()
 content = ContentShuffleDetector()
 face_detector = MediapipeFaceDetector()
+lineart_standard = LineartStandardDetector()
 
 
 # process
@@ -104,11 +112,14 @@ processed_image_lineart_anime = lineart_anime(img)
 processed_image_zoe = zoe(img)
 processed_image_sam = sam(img)
 processed_image_leres = leres(img)
+processed_image_teed = teed(img, detect_resolution=1024)
+processed_image_anyline = anyline(img, detect_resolution=1280)
 
 processed_image_canny = canny(img)
 processed_image_content = content(img)
 processed_image_mediapipe_face = face_detector(img)
 processed_image_dwpose = dwpose(img)
+processed_image_lineart_standard = lineart_standard(img, detect_resolution=1024)
 ```
 
 ### Image resolution
