@@ -9,7 +9,7 @@ All credit & copyright goes to <https://github.com/lllyasviel> .
 ## Install
 
 ```
-pip install controlnet-aux==0.0.7
+pip install -U controlnet-aux
 ```
 
 To support DWPose which is dependent on MMDetection, MMCV and MMPose
