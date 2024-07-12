@@ -330,10 +330,7 @@ def createConvFunc(op_type):
             padding = 2 * dilation
 
             shape = weights.shape
-            if weights.is_cuda:
-                buffer = torch.cuda.FloatTensor(shape[0], shape[1], 5 * 5).fill_(0)
-            else:
-                buffer = torch.zeros(shape[0], shape[1], 5 * 5).to(weights.device)
+            buffer = torch.zeros(shape[0], shape[1], 5 * 5).to(weights.device)
             weights = weights.view(shape[0], shape[1], -1)
             buffer[:, :, [0, 2, 4, 10, 14, 20, 22, 24]] = weights[:, :, 1:]
             buffer[:, :, [6, 7, 8, 11, 13, 16, 17, 18]] = -weights[:, :, 1:]
