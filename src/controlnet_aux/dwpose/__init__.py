@@ -43,8 +43,11 @@ class DWposeDetector:
         self.pose_estimation.to(device)
         return self
     
-    def __call__(self, input_image, detect_resolution=512, image_resolution=512, include_body=True, include_hand=False, include_face=False, output_type="pil", **kwargs):
-        
+    def __call__(self, input_image, detect_resolution=512, image_resolution=512, include_body=True, include_hand=True, include_face=True, hand_and_face=None, output_type="pil", **kwargs):
+        if hand_and_face is not None:
+            include_hand = hand_and_face
+            include_face = hand_and_face
+
         input_image = cv2.cvtColor(np.array(input_image, dtype=np.uint8), cv2.COLOR_RGB2BGR)
 
         input_image = HWC3(input_image)
