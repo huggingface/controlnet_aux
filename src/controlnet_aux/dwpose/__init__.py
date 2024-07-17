@@ -16,7 +16,7 @@ from ..util import HWC3, resize_image
 from . import util
 
 
-def draw_pose(pose, H, W):
+def draw_pose(pose, H, W, draw_body=True, draw_hand=True, draw_face=True):
     bodies = pose['bodies']
     faces = pose['faces']
     hands = pose['hands']
@@ -24,9 +24,12 @@ def draw_pose(pose, H, W):
     subset = bodies['subset']
     
     canvas = np.zeros(shape=(H, W, 3), dtype=np.uint8)
-    canvas = util.draw_bodypose(canvas, candidate, subset)
-    canvas = util.draw_handpose(canvas, hands)
-    canvas = util.draw_facepose(canvas, faces)
+    if draw_body:
+        canvas = util.draw_bodypose(canvas, candidate, subset)
+    if draw_hand:
+        canvas = util.draw_handpose(canvas, hands)
+    if draw_face:
+        canvas = util.draw_facepose(canvas, faces)
 
     return canvas
 
@@ -40,7 +43,7 @@ class DWposeDetector:
         self.pose_estimation.to(device)
         return self
     
-    def __call__(self, input_image, detect_resolution=512, image_resolution=512, output_type="pil", **kwargs):
+    def __call__(self, input_image, detect_resolution=512, image_resolution=512, include_body=True, include_hand=False, include_face=False, output_type="pil", **kwargs):
         
         input_image = cv2.cvtColor(np.array(input_image, dtype=np.uint8), cv2.COLOR_RGB2BGR)
 
@@ -77,7 +80,7 @@ class DWposeDetector:
             bodies = dict(candidate=body, subset=score)
             pose = dict(bodies=bodies, hands=hands, faces=faces)
             
-            detected_map = draw_pose(pose, H, W)
+            detected_map = draw_pose(pose, H, W, draw_body=include_body, draw_hand=include_hand, draw_face=include_face)
             detected_map = HWC3(detected_map)
             
             img = resize_image(input_image, image_resolution)
