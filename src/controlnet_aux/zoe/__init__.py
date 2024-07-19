@@ -47,7 +47,8 @@ class ZoeDetector:
             output_type = output_type or "np"
         
         input_image = HWC3(input_image)
-        input_image = resize_image(input_image, detect_resolution)
+        if detect_resolution is not None:
+            input_image = resize_image(input_image, detect_resolution)
 
         assert input_image.ndim == 3
         image_depth = input_image
@@ -73,7 +74,7 @@ class ZoeDetector:
         detected_map = depth_image
         detected_map = HWC3(detected_map)      
          
-        img = resize_image(input_image, image_resolution)
+        img = resize_image(input_image, image_resolution) if image_resolution is not None else input_image
         H, W, C = img.shape
 
         detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)
