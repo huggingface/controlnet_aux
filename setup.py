@@ -176,6 +176,7 @@ install_requires = [
     deps["torchvision"],
     deps["timm"],
     deps["scikit-image"],
+    deps["matplotlib"],
 ]
 
 setup(
