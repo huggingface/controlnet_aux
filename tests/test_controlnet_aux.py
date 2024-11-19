@@ -123,4 +123,3 @@ def test_zoe(img):
 def test_dwpose(img):
     dwpose = DWposeDetector()
     common("dwpose", dwpose, img)
-    return_pil("dwpose", dwpose, img)
