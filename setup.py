@@ -89,6 +89,7 @@ _deps = [
     "timm<=0.6.7",
     "torchvision",
     "scikit-image",
+    "easy-dwpose",
 ]
 
 # this is a lookup table with items like:
@@ -176,6 +177,7 @@ install_requires = [
     deps["torchvision"],
     deps["timm"],
     deps["scikit-image"],
+    deps["easy-dwpose"],
 ]
 
 setup(
