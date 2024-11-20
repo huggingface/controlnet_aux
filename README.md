@@ -14,12 +14,30 @@ pip install -U controlnet-aux
 
 To support DWPose which is dependent on MMDetection, MMCV and MMPose
 
-```
+```bash
 pip install -U openmim
 mim install mmengine
 mim install "mmcv>=2.0.1"
 mim install "mmdet>=3.1.0"
 mim install "mmpose>=1.1.0"
+```
+
+OR
+
+There's an alternative simplified implementation of DWpose, see [easy-dwpose](https://github.com/your-username/easy-dwpose).  
+It's lightweight, uses ONNX models without the need to install MMDetection, MMCV and MMPose.
+
+```bash
+pip install easy-dwpose
+```
+
+```python
+from easy_dwpose import DWposeDetector
+
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
+detector = DWposeDetector(device=device)
+
+skeleton = detector(input_image, output_type="pil", include_hands=True, include_face=True)
 ```
 
 ## Usage
