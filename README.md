@@ -24,7 +24,7 @@ mim install "mmpose>=1.1.0"
 
 OR
 
-There's an alternative simplified implementation of DWpose, see [easy-dwpose](https://github.com/your-username/easy-dwpose).  
+There's an alternative simplified implementation of DWpose, see [easy-dwpose](https://github.com/reallyigor/easy_dwpose/tree/main).  
 It's lightweight, uses ONNX models without the need to install MMDetection, MMCV and MMPose.
 
 ```bash
