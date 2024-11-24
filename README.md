@@ -8,24 +8,14 @@ All credit & copyright goes to <https://github.com/lllyasviel> .
 
 ## Install
 
-```
+```bash
 pip install -U controlnet-aux
 ```
 
-To support DWPose which is dependent on MMDetection, MMCV and MMPose
+### DWPose
 
-```bash
-pip install -U openmim
-mim install mmengine
-mim install "mmcv>=2.0.1"
-mim install "mmdet>=3.1.0"
-mim install "mmpose>=1.1.0"
-```
-
-OR
-
-There's an alternative simplified implementation of DWpose, see [easy-dwpose](https://github.com/reallyigor/easy_dwpose/tree/main).  
-It's lightweight, uses ONNX models without the need to install MMDetection, MMCV and MMPose.
+To use DWPose, you can install [easy-dwpose](https://github.com/reallyigor/easy_dwpose/tree/main).
+It's a lightweight package that uses ONNX models without requiring the installation of MMDetection, MMCV, or MMPose.
 
 ```bash
 pip install easy-dwpose
