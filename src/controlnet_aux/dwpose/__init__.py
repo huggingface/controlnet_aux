@@ -45,7 +45,8 @@ class DWposeDetector:
         input_image = cv2.cvtColor(np.array(input_image, dtype=np.uint8), cv2.COLOR_RGB2BGR)
 
         input_image = HWC3(input_image)
-        input_image = resize_image(input_image, detect_resolution)
+        if detect_resolution is not None:
+            input_image = resize_image(input_image, detect_resolution)
         H, W, C = input_image.shape
         
         with torch.no_grad():
@@ -80,7 +81,7 @@ class DWposeDetector:
             detected_map = draw_pose(pose, H, W)
             detected_map = HWC3(detected_map)
             
-            img = resize_image(input_image, image_resolution)
+            img = resize_image(input_image, image_resolution) if image_resolution is not None else input_image
             H, W, C = img.shape
 
             detected_map = cv2.resize(detected_map, (W, H), interpolation=cv2.INTER_LINEAR)

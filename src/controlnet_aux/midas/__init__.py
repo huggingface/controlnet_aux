@@ -45,7 +45,8 @@ class MidasDetector:
             output_type = output_type or "np"
         
         input_image = HWC3(input_image)
-        input_image = resize_image(input_image, detect_resolution)
+        if detect_resolution is not None:
+            input_image = resize_image(input_image, detect_resolution)
 
         assert input_image.ndim == 3
         image_depth = input_image
@@ -77,7 +78,7 @@ class MidasDetector:
         if depth_and_normal:
             normal_image = HWC3(normal_image)
 
-        img = resize_image(input_image, image_resolution)
+        img = resize_image(input_image, image_resolution) if image_resolution is not None else input_image
         H, W, C = img.shape
 
         depth_image = cv2.resize(depth_image, (W, H), interpolation=cv2.INTER_LINEAR)

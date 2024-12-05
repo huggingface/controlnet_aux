@@ -132,4 +132,6 @@ processed_image_lineart_standard = lineart_standard(img, detect_resolution=1024)
 
 ### Image resolution
 
-In order to maintain the image aspect ratio, `detect_resolution`, `image_resolution` and images sizes need to be using multiple of `64`.
+In order to maintain the image aspect ratio, `detect_resolution`, `image_resolution` and calls to `resize_image` need to be using multiple of `32`.  
+Otherwise images will be resized to work correctly.  
+Resolution can be set to `None` to prevent resize. This may lead to RunTimeError.  
