@@ -119,6 +119,7 @@ class Processor:
         # check if the proecssor is a checkpoint model
         if MODELS[processor_id]['checkpoint']:
             checkpoints_dir = "lllyasviel/Annotators" if checkpoints_dir is None else checkpoints_dir
+            LOGGER.info(f"Loading {processor_id} from {checkpoints_dir}")
             processor = processor.from_pretrained(checkpoints_dir)
         else:
             processor = processor()
