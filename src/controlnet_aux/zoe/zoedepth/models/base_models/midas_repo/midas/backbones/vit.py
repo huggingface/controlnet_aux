@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
-import timm
 import types
 import math
 import torch.nn.functional as F
+from .timm_adapter import create_model_adapter
 
 from .utils import (activations, forward_adapted_unflatten, get_activation, get_readout_oper,
                     make_backbone_default, Transpose)
@@ -64,7 +64,10 @@ def forward_flex(self, x):
         x = x + pos_embed
     x = self.pos_drop(x)
 
-    for blk in self.blocks:
+    # Handle different blocks attribute naming in different timm versions
+    blocks = self.blocks if hasattr(self, 'blocks') else self.transformer.blocks
+    
+    for blk in blocks:
         x = blk(x)
 
     x = self.norm(x)
@@ -96,7 +99,7 @@ def _make_vit_b16_backbone(
 
 
 def _make_pretrained_vitl16_384(pretrained, use_readout="ignore", hooks=None):
-    model = timm.create_model("vit_large_patch16_384", pretrained=pretrained)
+    model = create_model_adapter("vit_large_patch16_384", pretrained=pretrained)
 
     hooks = [5, 11, 17, 23] if hooks == None else hooks
     return _make_vit_b16_backbone(
@@ -109,7 +112,7 @@ def _make_pretrained_vitl16_384(pretrained, use_readout="ignore", hooks=None):
 
 
 def _make_pretrained_vitb16_384(pretrained, use_readout="ignore", hooks=None):
-    model = timm.create_model("vit_base_patch16_384", pretrained=pretrained)
+    model = create_model_adapter("vit_base_patch16_384", pretrained=pretrained)
 
     hooks = [2, 5, 8, 11] if hooks == None else hooks
     return _make_vit_b16_backbone(
@@ -208,7 +211,7 @@ def _make_vit_b_rn50_backbone(
 def _make_pretrained_vitb_rn50_384(
     pretrained, use_readout="ignore", hooks=None, use_vit_only=False
 ):
-    model = timm.create_model("vit_base_resnet50_384", pretrained=pretrained)
+    model = create_model_adapter("vit_base_resnet50_384", pretrained=pretrained)
 
     hooks = [0, 1, 8, 11] if hooks == None else hooks
     return _make_vit_b_rn50_backbone(

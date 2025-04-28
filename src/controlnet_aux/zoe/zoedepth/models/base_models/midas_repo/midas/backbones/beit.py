@@ -1,6 +1,6 @@
-import timm
 import torch
 import types
+from .timm_adapter import create_model_adapter
 
 import numpy as np
 import torch.nn.functional as F
@@ -94,14 +94,43 @@ def attention_forward(self, x, resolution, shared_rel_pos_bias: Optional[torch.T
 def block_forward(self, x, resolution, shared_rel_pos_bias: Optional[torch.Tensor] = None):
     """
     Modification of timm.models.beit.py: Block.forward to support arbitrary window sizes.
+    Handles differences between timm 0.6.7 and 1.0+ attribute naming.
     """
-    if self.gamma_1 is None:
-        x = x + self.drop_path(self.attn(self.norm1(x), resolution, shared_rel_pos_bias=shared_rel_pos_bias))
-        x = x + self.drop_path(self.mlp(self.norm2(x)))
+    # Check which attributes exist to determine which version of timm we're using
+    if hasattr(self, 'gamma_1'):
+        # Original timm 0.6.7 structure
+        if hasattr(self, 'drop_path'):
+            # Original attribute name
+            drop_path_fn = self.drop_path
+        elif hasattr(self, 'drop_path1'):
+            # timm 1.0+ attribute name
+            drop_path_fn = self.drop_path1
+        else:
+            # Fallback to identity if neither exists
+            drop_path_fn = lambda x: x
+            
+        x = x + drop_path_fn(self.gamma_1 * self.attn(self.norm1(x), resolution,
+                                                   shared_rel_pos_bias=shared_rel_pos_bias))
+        x = x + drop_path_fn(self.gamma_2 * self.mlp(self.norm2(x)))
     else:
-        x = x + self.drop_path(self.gamma_1 * self.attn(self.norm1(x), resolution,
-                                                        shared_rel_pos_bias=shared_rel_pos_bias))
-        x = x + self.drop_path(self.gamma_2 * self.mlp(self.norm2(x)))
+        # Alternative structure (may exist in newer versions)
+        if hasattr(self, 'drop_path'):
+            drop_path_fn = self.drop_path
+        elif hasattr(self, 'drop_path1'):
+            drop_path_fn = self.drop_path1 
+        else:
+            drop_path_fn = lambda x: x
+            
+        x = x + drop_path_fn(self.attn(self.norm1(x), resolution, shared_rel_pos_bias=shared_rel_pos_bias))
+        
+        # Check for drop_path2 for newer timm versions
+        if hasattr(self, 'drop_path2'):
+            drop_path2_fn = self.drop_path2
+        else:
+            drop_path2_fn = drop_path_fn
+            
+        x = x + drop_path2_fn(self.mlp(self.norm2(x)))
+    
     return x
 
 
@@ -155,7 +184,7 @@ def _make_beit_backbone(
 
 
 def _make_pretrained_beitl16_512(pretrained, use_readout="ignore", hooks=None):
-    model = timm.create_model("beit_large_patch16_512", pretrained=pretrained)
+    model = create_model_adapter("beit_large_patch16_512", pretrained=pretrained)
 
     hooks = [5, 11, 17, 23] if hooks is None else hooks
 
@@ -172,7 +201,7 @@ def _make_pretrained_beitl16_512(pretrained, use_readout="ignore", hooks=None):
 
 
 def _make_pretrained_beitl16_384(pretrained, use_readout="ignore", hooks=None):
-    model = timm.create_model("beit_large_patch16_384", pretrained=pretrained)
+    model = create_model_adapter("beit_large_patch16_384", pretrained=pretrained)
 
     hooks = [5, 11, 17, 23] if hooks is None else hooks
     return _make_beit_backbone(
@@ -185,7 +214,7 @@ def _make_pretrained_beitl16_384(pretrained, use_readout="ignore", hooks=None):
 
 
 def _make_pretrained_beitb16_384(pretrained, use_readout="ignore", hooks=None):
-    model = timm.create_model("beit_base_patch16_384", pretrained=pretrained)
+    model = create_model_adapter("beit_base_patch16_384", pretrained=pretrained)
 
     hooks = [2, 5, 8, 11] if hooks is None else hooks
     return _make_beit_backbone(
