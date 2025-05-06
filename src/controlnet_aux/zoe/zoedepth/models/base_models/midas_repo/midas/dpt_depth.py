@@ -197,4 +197,4 @@ class DPTDepthModel(DPT):
                 return out.squeeze(dim=1)
             else:
                 # If it's not a known compatibility issue, re-raise
-                raise
+                raise e

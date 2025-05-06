@@ -35,7 +35,7 @@ class ZoeDetector:
             model.load_state_dict(state_dict)
         except RuntimeError as e:
             # If that fails, try loading with strict=False
-            # print(f"Warning: Standard model loading failed, trying with strict=False: {str(e)}")
+            print(f"Warning: Standard model loading failed, trying with strict=False: {str(e)}")
             state_dict = torch.load(model_path, map_location=torch.device('cpu'))['model']
             model.load_state_dict(state_dict, strict=False)
             
