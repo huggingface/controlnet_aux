@@ -96,39 +96,23 @@ def block_forward(self, x, resolution, shared_rel_pos_bias: Optional[torch.Tenso
     Modification of timm.models.beit.py: Block.forward to support arbitrary window sizes.
     Handles differences between timm 0.6.7 and 1.0+ attribute naming.
     """
-    # Check which attributes exist to determine which version of timm we're using
-    if hasattr(self, 'gamma_1'):
-        # Original timm 0.6.7 structure
-        if hasattr(self, 'drop_path'):
-            # Original attribute name
-            drop_path_fn = self.drop_path
-        elif hasattr(self, 'drop_path1'):
-            # timm 1.0+ attribute name
-            drop_path_fn = self.drop_path1
-        else:
-            # Fallback to identity if neither exists
-            drop_path_fn = lambda x: x
-            
-        x = x + drop_path_fn(self.gamma_1 * self.attn(self.norm1(x), resolution,
-                                                   shared_rel_pos_bias=shared_rel_pos_bias))
-        x = x + drop_path_fn(self.gamma_2 * self.mlp(self.norm2(x)))
+
+    # Determine drop path functions first (common to both versions)
+    if hasattr(self, 'drop_path'):
+        drop_path1_fn = self.drop_path
+        drop_path2_fn = self.drop_path
+    elif hasattr(self, 'drop_path1'):
+        drop_path1_fn = self.drop_path1
+        drop_path2_fn = self.drop_path2 if hasattr(self, 'drop_path2') else self.drop_path1
     else:
-        # Alternative structure (may exist in newer versions)
-        if hasattr(self, 'drop_path'):
-            drop_path_fn = self.drop_path
-        elif hasattr(self, 'drop_path1'):
-            drop_path_fn = self.drop_path1 
-        else:
-            drop_path_fn = lambda x: x
-            
-        x = x + drop_path_fn(self.attn(self.norm1(x), resolution, shared_rel_pos_bias=shared_rel_pos_bias))
-        
-        # Check for drop_path2 for newer timm versions
-        if hasattr(self, 'drop_path2'):
-            drop_path2_fn = self.drop_path2
-        else:
-            drop_path2_fn = drop_path_fn
-            
+        drop_path1_fn = drop_path2_fn = lambda x: x
+
+    # Handle version-specific forward pass
+    if hasattr(self, 'gamma_1'):  # Original timm 0.6.7 structure
+        x = x + drop_path1_fn(self.gamma_1 * self.attn(self.norm1(x), resolution, shared_rel_pos_bias=shared_rel_pos_bias))
+        x = x + drop_path2_fn(self.gamma_2 * self.mlp(self.norm2(x)))
+    else:  # Newer timm structure
+        x = x + drop_path1_fn(self.attn(self.norm1(x), resolution, shared_rel_pos_bias=shared_rel_pos_bias))
         x = x + drop_path2_fn(self.mlp(self.norm2(x)))
     
     return x
