@@ -30,6 +30,10 @@ def find_model_using_name(model_name):
     and it is case-insensitive.
     """
     model_filename = "." + model_name + "_model"
+
+    # Import model_filename, for example ".pix2pix4depth_model",
+    # under __package__=="controlnet_aux.leres.pix2pix.models"
+    # __package__ resolves to the package namespace above this file
     modellib = importlib.import_module(model_filename, package=__package__)
     model = None
     target_model_name = model_name.replace('_', '') + 'model'

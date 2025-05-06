@@ -18,6 +18,10 @@ def get_func(func_name):
             return globals()[parts[0]]
         # Otherwise, assume we're referencing a module under modeling
         module_name = '.' + '.'.join(parts[:-1])
+
+        # Import module_name, for example ".network_auxi",
+        # under __package__=="controlnet_aux.leres.leres"
+        # __package__ resolves to the package namespace above this file
         module = importlib.import_module(module_name, package=__package__)
         return getattr(module, parts[-1])
     except Exception:
