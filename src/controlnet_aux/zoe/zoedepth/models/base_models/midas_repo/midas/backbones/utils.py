@@ -1,6 +1,8 @@
 import torch
-
 import torch.nn as nn
+
+# Store activations
+activations = {}
 
 
 class Slice(nn.Module):
@@ -50,12 +52,25 @@ class Transpose(nn.Module):
         return x
 
 
-activations = {}
+def get_drop_path(module):
+    """Helper function to get the drop_path attribute from a module, handling
+    different attribute names between timm versions"""
+    if hasattr(module, 'drop_path'):
+        return module.drop_path
+    elif hasattr(module, 'drop_path1'):
+        return module.drop_path1
+    else:
+        # Return identity function if drop_path doesn't exist
+        return lambda x: x
 
 
-def get_activation(name):
+def get_activation(name, bank=None):
+    """Returns a function that extracts activations of specified name from given bank"""
+    if bank is None:
+        bank = activations
+
     def hook(model, input, output):
-        activations[name] = output
+        bank[name] = output
 
     return hook
 

@@ -1,7 +1,7 @@
-import timm
 import torch
 import torch.nn as nn
 import numpy as np
+from .timm_adapter import create_model_adapter
 
 from .utils import activations, get_activation, Transpose
 
@@ -97,7 +97,7 @@ def stem_b4_transpose(in_chs, out_chs, activation):
 
 
 def _make_pretrained_levit_384(pretrained, hooks=None):
-    model = timm.create_model("levit_384", pretrained=pretrained)
+    model = create_model_adapter("levit_384", pretrained=pretrained)
 
     hooks = [3, 11, 21] if hooks == None else hooks
     return _make_levit_backbone(

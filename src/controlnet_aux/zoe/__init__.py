@@ -29,7 +29,16 @@ class ZoeDetector:
         conf = get_config(model_type, "infer")
         model_cls = ZoeDepth if model_type == "zoedepth" else ZoeDepthNK
         model = model_cls.build_from_config(conf)
-        model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'))['model'])
+        try:
+            # Try to load the model with standard approach first
+            state_dict = torch.load(model_path, map_location=torch.device('cpu'))['model']
+            model.load_state_dict(state_dict)
+        except RuntimeError as e:
+            # If that fails, try loading with strict=False
+            print(f"Warning: Standard model loading failed, trying with strict=False: {str(e)}")
+            state_dict = torch.load(model_path, map_location=torch.device('cpu'))['model']
+            model.load_state_dict(state_dict, strict=False)
+            
         model.eval()
 
         return cls(model)

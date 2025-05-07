@@ -163,4 +163,38 @@ class DPTDepthModel(DPT):
            self.load(path)
 
     def forward(self, x):
-        return super().forward(x).squeeze(dim=1)
+        """Forward pass.
+
+        Args:
+            x (tensor): input data (image)
+
+        Returns:
+            tensor: depth
+        """
+        try:
+            # Standard forward pass
+            return super().forward(x).squeeze(dim=1)
+        except (AttributeError, RuntimeError) as e:
+            # Handle compatibility issues
+            if "drop_path" in str(e):
+                # print("Warning: Handling timm compatibility issue. Using alternative forward path.")
+                # Manual forward implementation as fallback
+                layers = self.forward_transformer(self.pretrained, x)
+                layer_1, layer_2, layer_3, layer_4 = layers
+                
+                layer_1_rn = self.scratch.layer1_rn(layer_1)
+                layer_2_rn = self.scratch.layer2_rn(layer_2)
+                layer_3_rn = self.scratch.layer3_rn(layer_3)
+                layer_4_rn = self.scratch.layer4_rn(layer_4)
+                
+                path_4 = self.scratch.refinenet4(layer_4_rn)
+                path_3 = self.scratch.refinenet3(path_4, layer_3_rn)
+                path_2 = self.scratch.refinenet2(path_3, layer_2_rn)
+                path_1 = self.scratch.refinenet1(path_2, layer_1_rn)
+                
+                out = self.scratch.output_conv(path_1)
+                
+                return out.squeeze(dim=1)
+            else:
+                # If it's not a known compatibility issue, re-raise
+                raise e

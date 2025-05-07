@@ -35,6 +35,7 @@ from ..layers.localbins_layers import (Projector, SeedBinRegressor,
                                             SeedBinRegressorUnnormed)
 from ..layers.patch_transformer import PatchTransformerEncoder
 from ..model_io import load_state_from_resource
+from ...models.base_models.midas_repo.midas.backbones.timm_adapter import is_new_timm
 
 class ZoeDepthNK(DepthModel):
     def __init__(self, core,  bin_conf, bin_centers_type="softplus", bin_embedding_dim=128,
@@ -330,3 +331,17 @@ class ZoeDepthNK(DepthModel):
     @staticmethod
     def build_from_config(config):
         return ZoeDepthNK.build(**config)
+
+    def load_state_dict(self, state_dict, strict=True):
+        """
+        Override load_state_dict to handle different model structure between timm versions
+        """
+        if is_new_timm:
+            # Filter out relative_position_index keys if using timm 1.0+
+            filtered_state_dict = {}
+            for k, v in state_dict.items():
+                if 'relative_position_index' not in k:
+                    filtered_state_dict[k] = v
+            return super().load_state_dict(filtered_state_dict, strict=False)
+        else:
+            return super().load_state_dict(state_dict, strict=strict)

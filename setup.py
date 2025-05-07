@@ -86,7 +86,7 @@ _deps = [
     "scipy",
     "huggingface_hub",
     "einops",
-    "timm<=0.6.7",
+    "timm",
     "torchvision",
     "scikit-image",
 ]

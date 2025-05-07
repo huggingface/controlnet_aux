@@ -17,8 +17,12 @@ def get_func(func_name):
         if len(parts) == 1:
             return globals()[parts[0]]
         # Otherwise, assume we're referencing a module under modeling
-        module_name = 'controlnet_aux.leres.leres.' + '.'.join(parts[:-1])
-        module = importlib.import_module(module_name)
+        module_name = '.' + '.'.join(parts[:-1])
+
+        # Import module_name, for example ".network_auxi",
+        # under __package__=="controlnet_aux.leres.leres"
+        # __package__ resolves to the package namespace above this file
+        module = importlib.import_module(module_name, package=__package__)
         return getattr(module, parts[-1])
     except Exception:
         print('Failed to f1ind function: %s', func_name)
