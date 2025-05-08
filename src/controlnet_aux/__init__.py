@@ -1,4 +1,4 @@
-__version__ = "0.0.9"
+__version__ = "0.0.10"
 
 from .anyline import AnylineDetector
 from .canny import CannyDetector
